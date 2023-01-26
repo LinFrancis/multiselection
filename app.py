@@ -3,6 +3,8 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mtick
+import mplcursors
 #import re
 
 #__________________________________________________________________________________________________________________________________________________________________
@@ -22,7 +24,7 @@ st.markdown(hide_table_row_index, unsafe_allow_html=True)
 #__________________________________________________________________________________________________________________________________________________________________
 # Export data
 #__________________________________________________________________________________________________________________________________________________________________
-
+#______
 #General Information Survey
 df_gi = pd.read_csv('GI_27012013.csv',sep=';', header=None, prefix="q").iloc[2:]
 df_gi.set_index("q0", inplace = True)
@@ -43,33 +45,67 @@ df_gi.rename(columns = { 'q1':'Initiative_name', 'q2':'Short name'}, inplace = T
 df_gi['Region']           = df_gi[['q39','q40','q41','q42','q43','q44','q45','q46','q47','q48']].apply(lambda x:'; '.join(x.dropna().astype(str)),axis=1)
 df_gi['Priority group']   = df_gi[['q29','q30','q31','q32','q33','q34','q35','q36','q37',     ]].apply(lambda x:'; '.join(x.dropna().astype(str)),axis=1)
 df_gi['Impact System']       = df_gi[['q50','q51','q52','q53','q54','q55'                        ]].apply(lambda x:'; '.join(x.dropna().astype(str)),axis=1)
-
+#____
 #Pledge Statement Survey
 df_pdg = pd.read_csv('Pledge_27012013.csv',sep=';', header=None, prefix="g").iloc[2:]
 df_pdg.set_index("g0", inplace = True)
 df_pdg.index.names = ['Master ID']
 df_pdg = df_pdg.dropna(how = 'all')
 df_pdg_names = pd.read_csv('Pledge_27012013.csv',sep=';').iloc[1:]
-
 ##rename
-df_pdg['g29'] = df_pdg['g29'].replace(['Poor'], 'Low income communities')
+df_pdg['g28'] = df_pdg['g28'].replace(['Poor'], 'Low income communities')
+
+replacement_mapping_dict = {"Not targeted.": "0","2": "1","Mildly targeted but not exclusively.": "2","4": "3",
+    "Main or unique target.": "4",}
+df_pdg["g20"] = df_pdg["g20"].replace(replacement_mapping_dict) #Women and girls
+df_pdg["g21"] = df_pdg["g21"].replace(replacement_mapping_dict) #LGBTQIA+
+df_pdg["g22"] = df_pdg["g22"].replace(replacement_mapping_dict) #Elderly
+df_pdg["g23"] = df_pdg["g23"].replace(replacement_mapping_dict) #Children and Youth
+df_pdg["g24"] = df_pdg["g24"].replace(replacement_mapping_dict) #Disabled
+df_pdg["g25"] = df_pdg["g25"].replace(replacement_mapping_dict) #Indigenous or traditional communities
+df_pdg["g26"] = df_pdg["g26"].replace(replacement_mapping_dict) #Racial, ethnic and/or religious minorities
+df_pdg["g27"] = df_pdg["g27"].replace(replacement_mapping_dict) #Refugees
+df_pdg["g28"] = df_pdg["g28"].replace(replacement_mapping_dict) #Low income communities'
+
+df_pdg["g20"] = pd.to_numeric(df_pdg["g20"]) #Women and girls
+df_pdg["g21"] = pd.to_numeric(df_pdg["g21"]) #LGBTQIA+
+df_pdg["g22"] = pd.to_numeric(df_pdg["g22"]) #Elderly
+df_pdg["g23"] = pd.to_numeric(df_pdg["g23"]) #Children and Youth
+df_pdg["g24"] = pd.to_numeric(df_pdg["g24"]) #Disabled
+df_pdg["g25"] = pd.to_numeric(df_pdg["g25"]) #Indigenous or traditional communities
+df_pdg["g26"] = pd.to_numeric(df_pdg["g26"]) #Racial, ethnic and/or religious minorities
+df_pdg["g27"] = pd.to_numeric(df_pdg["g27"]) #Refugees
+df_pdg["g28"] = pd.to_numeric(df_pdg["g28"]) #Low income communities'
+
+#df_pdg["g20"] = df_pdg["g20"].astype(int) #Women and girls
+#df_pdg["g21"] = df_pdg["g21"].astype(int) #LGBTQIA+
+#df_pdg["g22"] = df_pdg["g22"].astype(int) #Elderly
+#df_pdg["g23"] = df_pdg["g23"].astype(int) #Children and Youth
+#df_pdg["g24"] = df_pdg["g24"].astype(int) #Disabled
+#df_pdg["g25"] = df_pdg["g25"].astype(int) #Indigenous or traditional communities
+#df_pdg["g26"] = df_pdg["g26"].astype(int) #Racial, ethnic and/or religious minorities
+#df_pdg["g27"] = df_pdg["g27"].astype(int) #Refugees
+#df_pdg["g28"] = df_pdg["g28"].astype(int) #Low income communities'
+#df2['Individual coastal'] = df2['Individual coastal'].astype(int)
+#df2['Individual rural']   = df2['Individual rural'  ].astype(int)
+
 #creating new variables concatenating
 df_pdg['Engagement scope'] = df_pdg[['g13','g14','g15','g16','g17','g18']].apply(lambda x:'; '.join(x.dropna().astype(str)),axis=1)
 
 #hazards for indivdual engagement
-table_hazards = df_pdg.iloc[:, 33:51] #selecting all columns and making a new dataframe
-v_hazards = table_hazards.columns.values.tolist() #making a list with the names of the columns
-df_pdg['Hazards'] = df_pdg[v_hazards].apply(lambda x:'; '.join(x.dropna().astype(str)),axis=1)
+#table_hazards = df_pdg.iloc[:, 33:51] #selecting all columns and making a new dataframe
+#v_hazards = table_hazards.columns.values.tolist() #making a list with the names of the columns
+#df_pdg['Hazards'] = df_pdg[v_hazards].apply(lambda x:'; '.join(x.dropna().astype(str)),axis=1)
 
 #continents for indivdual engagement
-table_continents_ind = df_pdg.iloc[:, 52:57] #selecting all columns and making a new dataframe
-v_continents_ind = table_continents_ind.columns.values.tolist() #making a list with the names of the columns
-df_pdg['continents_ind'] = df_pdg[v_continents_ind].apply(lambda x:'; '.join(x.dropna().astype(str)),axis=1)
+#table_continents_ind = df_pdg.iloc[:, 52:57] #selecting all columns and making a new dataframe
+#v_continents_ind = table_continents_ind.columns.values.tolist() #making a list with the names of the columns
+#df_pdg['continents_ind'] = df_pdg[v_continents_ind].apply(lambda x:'; '.join(x.dropna().astype(str)),axis=1)
 
 #countries for indivdual engagement
-table_countries_ind = df_pdg.iloc[:, 58:243] #selecting all columns and making a new dataframe
-v_countries_ind = table_countries_ind.columns.values.tolist() #making a list with the names of the columns
-df_pdg['countries_ind'] = df_pdg[v_countries_ind].apply(lambda x:'; '.join(x.dropna().astype(str)),axis=1)
+#table_countries_ind = df_pdg.iloc[:, 58:243] #selecting all columns and making a new dataframe
+#v_countries_ind = table_countries_ind.columns.values.tolist() #making a list with the names of the columns
+#df_pdg['countries_ind'] = df_pdg[v_countries_ind].apply(lambda x:'; '.join(x.dropna().astype(str)),axis=1)
 
 #Plan Statement Survey
 df_plan = pd.read_csv('Plan_27012013.csv',sep=';', header=None, prefix="p").iloc[2:]
@@ -109,15 +145,12 @@ areas_options = ['Cross-cutting enablers: Planning and Finance','Food and Agricu
 engagement_options = ['Individuals','Companies','Countries','Regions','Cities','Natural Systems']
 
 st.sidebar.write('Buscador')
-macro_region_selection = st.sidebar.multiselect('Macro Region where they operate',    regions_options)
-priority_selection = st.sidebar.multiselect('Priority group which describes them',   priority_options)
-areas_selection = st.sidebar.multiselect('Impact Systems where they operate',      areas_options)
-engagement_selection = st.sidebar.multiselect('Their engagement scope', engagement_options)   #add further multiselect if needed
+areas_selection = st.sidebar.multiselect('Impact Systems',      areas_options)
+engagement_selection = st.sidebar.multiselect('Engagement scope', engagement_options)   #add further multiselect if needed
+priority_selection = st.sidebar.multiselect('Priority groups',   priority_options)
+macro_region_selection = st.sidebar.multiselect('Macro Regions',    regions_options)
 
 selection = [macro_region_selection,priority_selection,areas_selection,engagement_selection]           #extend if more multiselect
-#selection = [[],[],[],['Natural Systems']]                        #if the selection is empty, all items to be considered (handling empty strimlit multiselections)
-#st.write(selection)
-#st.write(df['Engagement scope'])
 
 i=0
 while i < len(selection):
@@ -149,12 +182,95 @@ while j < len(selection):
 df_filtered = df.iloc[final_list].reset_index().sort_values(by = 'Short name')
 df_filtered.set_index("Master ID", inplace = True)
 
+#__________________________________________________________________________________________________________________________________________________________________
+# MAIN RESULTS
+#__________________________________________________________________________________________________________________________________________________________________
+#
+
 st.markdown('Resultados')
 col1,col2,col3,col4 = st.columns((1,1,1,3))
 col1.caption('Original dataframe shape')
 col1.write(df.shape)
 col2.caption('Filtered dataframe shape')
 col2.write(df_filtered.shape)
-#col3.caption('Selection vector')
-#col3.write(final_list)
-st.write(df_filtered[['Initiative_name','Short name','Priority group','Impact System','Engagement scope']])
+#st.write(df_filtered[['Initiative_name','Short name','Priority group','Impact System','Engagement scope']])
+
+
+#__________________________________________________________________________________________________________________________________________________________________
+# PRIORITY GROUPS PLEDGE
+#__________________________________________________________________________________________________________________________________________________________________
+#
+
+df2 = df_filtered
+
+df2= df2[df2['g20'].notna()]
+df2= df2[df2['g21'].notna()]
+df2= df2[df2['g22'].notna()]
+df2= df2[df2['g23'].notna()]
+df2= df2[df2['g24'].notna()]
+df2= df2[df2['g25'].notna()]
+df2= df2[df2['g26'].notna()]
+df2= df2[df2['g27'].notna()]
+df2= df2[df2['g28'].notna()]
+
+
+pg0 = df_pdg["g20"].mean() #Women and girls
+pg1 = df_pdg["g21"].mean() #LGBTQIA+
+pg2 = df_pdg["g22"].mean()#Elderly
+pg3 = df_pdg["g23"].mean() #Children and Youth
+pg4 = df_pdg["g24"].mean() #Disabled
+pg5 = df_pdg["g25"].mean() #Indigenous or traditional communities
+pg6 = df_pdg["g26"].mean() #Racial, ethnic and/or religious minorities
+pg7 = df_pdg["g27"].mean() #Refugees
+pg8 = df_pdg["g28"].mean() #Low income communities
+
+s_df2 = pd.DataFrame(dict(
+    r=[pg0, pg1, pg2, pg3, pg4, pg5, pg6, pg7, pg8],
+    theta=['Women and girls','LGBTQIA+','Elderly','Children and Youth','Disabled','Indigenous or traditional communities','Racial, ethnic and/or religious minorities','Refugees','Low income communities']))
+s_fig_ra_general = px.line_polar(s_df2, r='r', theta='theta', line_close=True, title="Vulnerable group prioritized (Only for Individuals Scope)")
+s_fig_ra_general.update_traces(fill='toself')
+
+st.write(s_fig_ra_general)
+
+#__________________________________________________________________________________________________________________________________________________________________
+# SCATTER PLOT INLAND. RURAL
+#__________________________________________________________________________________________________________________________________________________________________
+#
+
+#Data preparation
+df2 = df_filtered
+
+df2= df2[df2['g30'].notna()] #Individual coastal
+df2= df2[df2['g31' ].notna()] #Individual rural
+
+df2['g30'] = df2['g30'].astype(int) #Individual coastal
+df2['g31']   = df2['g31'  ].astype(int) #Individual rural
+
+df2.rename(columns = {'g30':'C', 'g31':'R', 'Short name':"Name"}, inplace = True)
+
+#Scatterplot for coastal/rural in individual scope
+st.markdown("Scatterplot for coastal/rural in individual scope (Only for Individuals Scope)")
+
+x = df2['C']
+y = df2['R']
+z = df2['Name']
+
+fig = plt.figure(figsize=(10, 10))
+placeholder = st.empty()
+for i in range(len(df2)):
+    plt.scatter(x,y,c='red', marker='o')
+
+plt.title("Individuals' environment ""[%]""",fontsize=13)
+plt.xlabel('inland'+' '*74+'coastal',fontsize=11)
+plt.ylabel('urban'+' '*49+'rural',fontsize=11)
+
+plt.gca().spines['top']  .set_visible(False)
+plt.gca().spines['right'].set_visible(False)
+
+for i in range(len(df2)):
+     plt.text(df2.C[df2.Name ==z[i]],df2.R[df2.Name==z[i]],z[i], fontdict=dict(color='black', alpha=0.5, size=12))
+
+plt.xlim([0, 100])
+plt.ylim([0, 100])    #more ideas: https://matplotlib.org/stable/gallery/pie_and_polar_charts/polar_scatter.html
+
+placeholder.pyplot(fig)
