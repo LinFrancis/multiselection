@@ -187,15 +187,12 @@ df_filtered.set_index("Master ID", inplace = True)
 #__________________________________________________________________________________________________________________________________________________________________
 #
 
-st.markdown('Resultados')
+st.header('Resultados')
 col1,col2,col3,col4 = st.columns((1,1,1,3))
 col1.caption('Original dataframe shape')
 col1.write(df.shape)
 col2.caption('Filtered dataframe shape')
 col2.write(df_filtered.shape)
-#st.write(df_filtered[['Initiative_name','Short name','Priority group','Impact System','Engagement scope']])
-
-
 #__________________________________________________________________________________________________________________________________________________________________
 # PRIORITY GROUPS PLEDGE
 #__________________________________________________________________________________________________________________________________________________________________
