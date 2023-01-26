@@ -149,7 +149,7 @@ df_filtered = df.iloc[final_list].reset_index().sort_values(by = 'q2')
 df_filtered.set_index("Master ID", inplace = True)
 
 st.markdown('Resultados')
-col1,col2,col3 = st.columns((1,1,1,3))
+col1,col2,col3,col4 = st.columns((1,1,1,3))
 col1.caption('Original dataframe shape')
 col1.write(df.shape)
 col2.caption('Filtered dataframe shape')
