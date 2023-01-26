@@ -146,7 +146,7 @@ while j < len(selection):
         final_list = list(set(common_member(temp_list,final_list)))
         j = j+1
 
-df_filtered = df.iloc[final_list].reset_index().sort_values(by = 'Shorname')
+df_filtered = df.iloc[final_list].reset_index().sort_values(by = 'Short name')
 df_filtered.set_index("Master ID", inplace = True)
 
 st.markdown('Resultados')
