@@ -140,7 +140,7 @@ def common_member(a, b):                   #used to intersect any two lists
 
 final_list = list(range(0,df_len+1))
 j = 0
-while j < len(selection)-1:
+while j < len(selection):
         temp_list  = list(set(index_selection_results(selection[j],poss[j]))) #avoidung index duplications
         final_list = list(set(common_member(temp_list,final_list)))
         j = j+1
