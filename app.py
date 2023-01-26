@@ -4,7 +4,7 @@ import numpy as np
 import plotly.express as px
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
-import mplcursors
+#import mplcursors
 #import re
 
 #__________________________________________________________________________________________________________________________________________________________________
