@@ -3,8 +3,7 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import matplotlib.pyplot as plt
-import re
-
+#import re
 
 #__________________________________________________________________________________________________________________________________________________________________
 # Dashboard structure
@@ -71,7 +70,6 @@ table_countries_ind = df_pdg.iloc[:, 58:243] #selecting all columns and making a
 v_countries_ind = table_countries_ind.columns.values.tolist() #making a list with the names of the columns
 df_pdg['countries_ind'] = df_pdg[v_countries_ind].apply(lambda x:'; '.join(x.dropna().astype(str)),axis=1)
 
-
 #Plan Statement Survey
 df_plan = pd.read_csv('Plan_27012013.csv',sep=';', header=None, prefix="p").iloc[2:]
 df_plan.set_index("p0", inplace = True)
@@ -83,7 +81,6 @@ df_ra = pd.read_csv('RA_27012013.csv',sep=';', header=None, prefix="r").iloc[2:]
 df_ra.set_index("r0", inplace = True)
 df_ra.index.names = ['Master ID']
 df_ra = df_ra.dropna(how = 'all')
-
 
 #Making one database
 df = pd.concat([df_gi,df_pdg,df_ra], axis=1)
@@ -104,7 +101,6 @@ cats_defs = [
 cats = [cats_defs[0][0], cats_defs[1][0]     , cats_defs[2][0]  ,cats_defs[3][0]       ]  #list of question categories
 defs = [cats_defs[0][1], cats_defs[1][1]     , cats_defs[2][1]  ,cats_defs[3][1]       ]  #list of possible answers
 poss = [df['Region']   , df['Priority group'], df['Impact System'] ,df['Engagement scope']]  #correspoding answers
-
 
 regions_options = ['Oceania & Pacific','East Asia','South Asia','East Europe & Central Asia','Northern & Western Europe','North Africa and the Middle East','Sub-Saharan Africa','South America','Central America and Caribbean','North America']
 priority_options = ['Women and girls','LGBTQIA+ people','Elderly','Children & Youth','Indigenous and traditional communities','Ethnic or religious minorities','Refugees','Disabled People','Low income communities']
@@ -153,14 +149,11 @@ df_filtered = df.iloc[final_list].reset_index().sort_values(by = 'q2')
 df_filtered.set_index("Master ID", inplace = True)
 
 st.markdown('Resultados')
-col1, col2,col3 = st.columns((1,1,3))
+col1,col2,col3 = st.columns((1,1,3))
 col1.caption('Original dataframe shape')
 col1.write(df.shape)
 col2.caption('Filtered dataframe shape')
 col2.write(df_filtered.shape)
 st.markdown("Problema: el buscador no selecciona información del 4 selector: df['Engagement scope']. Todo lo demás funciona bien.")
-st.write(df_filtered[['Region','Priority group','Impact System','Engagement scope']])
-
-
-
-#
+#st.write(df_filtered[['Region','Priority group','Impact System','Engagement scope']])
+st.write(df_filtered[['Engagement scope']])
