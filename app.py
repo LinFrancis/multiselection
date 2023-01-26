@@ -38,6 +38,7 @@ df_gi['q52'] = df_gi['q52'].replace(['Ocean and coastal zone'], 'Coastal and Oce
 df_gi['q53'] = df_gi['q53'].replace(['Water and land ecosystems'], 'Water and Nature Systems')
 df_gi['q54'] = df_gi['q54'].replace(['Cities and human settlements'], 'Human Settlement Systems')
 df_gi['q55'] = df_gi['q55'].replace(['Infrastructure and services'], 'Infrastructure Systems')
+df_gi.rename(columns = { 'q1':'Initiative_name', 'q2':'Short name'}, inplace = True)
 #creating new variables concatenating
 df_gi['Region']           = df_gi[['q39','q40','q41','q42','q43','q44','q45','q46','q47','q48']].apply(lambda x:'; '.join(x.dropna().astype(str)),axis=1)
 df_gi['Priority group']   = df_gi[['q29','q30','q31','q32','q33','q34','q35','q36','q37',     ]].apply(lambda x:'; '.join(x.dropna().astype(str)),axis=1)
@@ -145,7 +146,7 @@ while j < len(selection):
         final_list = list(set(common_member(temp_list,final_list)))
         j = j+1
 
-df_filtered = df.iloc[final_list].reset_index().sort_values(by = 'q2')
+df_filtered = df.iloc[final_list].reset_index().sort_values(by = 'Shorname')
 df_filtered.set_index("Master ID", inplace = True)
 
 st.markdown('Resultados')
@@ -154,9 +155,6 @@ col1.caption('Original dataframe shape')
 col1.write(df.shape)
 col2.caption('Filtered dataframe shape')
 col2.write(df_filtered.shape)
-col3.caption('Selection vector')
-col3.write(final_list)
-st.markdown("Problema: el buscador no selecciona información del 4 selector: df['Engagement scope']. Todo lo demás funciona bien.")
-st.markdown("Arreglado parece.")
-st.write(df_filtered[['Region','Priority group','Impact System','Engagement scope']])
-#st.write(df_filtered[['Engagement scope']])
+#col3.caption('Selection vector')
+#col3.write(final_list)
+st.write(df_filtered[['Initiative_name','Short name','Priority group','Impact System','Engagement scope']])
