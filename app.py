@@ -57,37 +57,26 @@ df_pdg['g28'] = df_pdg['g28'].replace(['Poor'], 'Low income communities')
 
 replacement_mapping_dict = {"Not targeted.": "0","2": "1","Mildly targeted but not exclusively.": "2","4": "3",
     "Main or unique target.": "4",}
-df_pdg["g20"] = df_pdg["g20"].replace(replacement_mapping_dict) #Women and girls
-df_pdg["g21"] = df_pdg["g21"].replace(replacement_mapping_dict) #LGBTQIA+
-df_pdg["g22"] = df_pdg["g22"].replace(replacement_mapping_dict) #Elderly
-df_pdg["g23"] = df_pdg["g23"].replace(replacement_mapping_dict) #Children and Youth
-df_pdg["g24"] = df_pdg["g24"].replace(replacement_mapping_dict) #Disabled
-df_pdg["g25"] = df_pdg["g25"].replace(replacement_mapping_dict) #Indigenous or traditional communities
-df_pdg["g26"] = df_pdg["g26"].replace(replacement_mapping_dict) #Racial, ethnic and/or religious minorities
-df_pdg["g27"] = df_pdg["g27"].replace(replacement_mapping_dict) #Refugees
-df_pdg["g28"] = df_pdg["g28"].replace(replacement_mapping_dict) #Low income communities'
 
-df_pdg["g20"] = pd.to_numeric(df_pdg["g20"]) #Women and girls
-df_pdg["g21"] = pd.to_numeric(df_pdg["g21"]) #LGBTQIA+
-df_pdg["g22"] = pd.to_numeric(df_pdg["g22"]) #Elderly
-df_pdg["g23"] = pd.to_numeric(df_pdg["g23"]) #Children and Youth
-df_pdg["g24"] = pd.to_numeric(df_pdg["g24"]) #Disabled
-df_pdg["g25"] = pd.to_numeric(df_pdg["g25"]) #Indigenous or traditional communities
-df_pdg["g26"] = pd.to_numeric(df_pdg["g26"]) #Racial, ethnic and/or religious minorities
-df_pdg["g27"] = pd.to_numeric(df_pdg["g27"]) #Refugees
-df_pdg["g28"] = pd.to_numeric(df_pdg["g28"]) #Low income communities'
+df_pdg["g20"] = df_pdg["g20"].replace(replacement_mapping_dict) #Women and girls ind
+df_pdg["g21"] = df_pdg["g21"].replace(replacement_mapping_dict) #LGBTQIA+ ind
+df_pdg["g22"] = df_pdg["g22"].replace(replacement_mapping_dict) #Elderly ind
+df_pdg["g23"] = df_pdg["g23"].replace(replacement_mapping_dict) #Children and Youth ind
+df_pdg["g24"] = df_pdg["g24"].replace(replacement_mapping_dict) #Disabled ind
+df_pdg["g25"] = df_pdg["g25"].replace(replacement_mapping_dict) #Indigenous or traditional communities ind
+df_pdg["g26"] = df_pdg["g26"].replace(replacement_mapping_dict) #Racial, ethnic and/or religious minorities ind
+df_pdg["g27"] = df_pdg["g27"].replace(replacement_mapping_dict) #Refugees ind
+df_pdg["g28"] = df_pdg["g28"].replace(replacement_mapping_dict) #Low income communities ind
 
-#df_pdg["g20"] = df_pdg["g20"].astype(int) #Women and girls
-#df_pdg["g21"] = df_pdg["g21"].astype(int) #LGBTQIA+
-#df_pdg["g22"] = df_pdg["g22"].astype(int) #Elderly
-#df_pdg["g23"] = df_pdg["g23"].astype(int) #Children and Youth
-#df_pdg["g24"] = df_pdg["g24"].astype(int) #Disabled
-#df_pdg["g25"] = df_pdg["g25"].astype(int) #Indigenous or traditional communities
-#df_pdg["g26"] = df_pdg["g26"].astype(int) #Racial, ethnic and/or religious minorities
-#df_pdg["g27"] = df_pdg["g27"].astype(int) #Refugees
-#df_pdg["g28"] = df_pdg["g28"].astype(int) #Low income communities'
-#df2['Individual coastal'] = df2['Individual coastal'].astype(int)
-#df2['Individual rural']   = df2['Individual rural'  ].astype(int)
+df_pdg["g20"] = pd.to_numeric(df_pdg["g20"]) #Women and girls ind
+df_pdg["g21"] = pd.to_numeric(df_pdg["g21"]) #LGBTQIA+ ind
+df_pdg["g22"] = pd.to_numeric(df_pdg["g22"]) #Elderly ind
+df_pdg["g23"] = pd.to_numeric(df_pdg["g23"]) #Children and Youth ind
+df_pdg["g24"] = pd.to_numeric(df_pdg["g24"]) #Disabled ind
+df_pdg["g25"] = pd.to_numeric(df_pdg["g25"]) #Indigenous or traditional communities ind
+df_pdg["g26"] = pd.to_numeric(df_pdg["g26"]) #Racial, ethnic and/or religious minorities ind
+df_pdg["g27"] = pd.to_numeric(df_pdg["g27"]) #Refugees ind
+df_pdg["g28"] = pd.to_numeric(df_pdg["g28"]) #Low income communities ind
 
 #creating new variables concatenating
 df_pdg['Engagement scope'] = df_pdg[['g13','g14','g15','g16','g17','g18']].apply(lambda x:'; '.join(x.dropna().astype(str)),axis=1)
@@ -187,13 +176,14 @@ df_filtered.set_index("Master ID", inplace = True)
 #__________________________________________________________________________________________________________________________________________________________________
 #
 
-st.header('Resultados')
+st.markdown('Resultados')
 col1,col2,col3,col4 = st.columns((1,1,1,3))
 col1.caption('Original dataframe shape')
 col1.write(df.shape)
 col2.caption('Filtered dataframe shape')
 col2.write(df_filtered.shape)
-st.write(df_filtered)
+#st.write(df_filtered[['Initiative_name','Short name','Priority group','Impact System','Engagement scope']])
+
 
 #__________________________________________________________________________________________________________________________________________________________________
 # PRIORITY GROUPS PLEDGE
@@ -202,20 +192,13 @@ st.write(df_filtered)
 
 df2 = df_filtered
 
-df2= df2[df2['g20'].notna()]
-df2= df2[df2['g21'].notna()]
-df2= df2[df2['g22'].notna()]
-df2= df2[df2['g23'].notna()]
-df2= df2[df2['g24'].notna()]
-df2= df2[df2['g25'].notna()]
-df2= df2[df2['g26'].notna()]
-df2= df2[df2['g27'].notna()]
-df2= df2[df2['g28'].notna()]
+list = {'g20','g21','g22','g23','g24','g25','g26','g27','g28'} #making a list with all the columns name use in the graph
 
+df2= df2[df2[list].notna()] #cleaning na
 
 pg0 = df_pdg["g20"].mean() #Women and girls
 pg1 = df_pdg["g21"].mean() #LGBTQIA+
-pg2 = df_pdg["g22"].mean()#Elderly
+pg2 = df_pdg["g22"].mean() #Elderly
 pg3 = df_pdg["g23"].mean() #Children and Youth
 pg4 = df_pdg["g24"].mean() #Disabled
 pg5 = df_pdg["g25"].mean() #Indigenous or traditional communities
@@ -226,10 +209,11 @@ pg8 = df_pdg["g28"].mean() #Low income communities
 s_df2 = pd.DataFrame(dict(
     r=[pg0, pg1, pg2, pg3, pg4, pg5, pg6, pg7, pg8],
     theta=['Women and girls','LGBTQIA+','Elderly','Children and Youth','Disabled','Indigenous or traditional communities','Racial, ethnic and/or religious minorities','Refugees','Low income communities']))
-s_fig_ra_general = px.line_polar(s_df2, r='r', theta='theta', line_close=True, title="Vulnerable group prioritized (Only for Individuals Scope)")
+s_fig_ra_general = px.line_polar(s_df2, r='r', theta='theta', line_close=True, title="Vulnerable groups (Only for Individuals Scope)")
 s_fig_ra_general.update_traces(fill='toself')
 
 st.write(s_fig_ra_general)
+
 
 #__________________________________________________________________________________________________________________________________________________________________
 # SCATTER PLOT INLAND. RURAL
@@ -256,6 +240,94 @@ z = df2['Name']
 
 fig = plt.figure(figsize=(10, 10))
 placeholder = st.empty()
+for i in range(len(df2)):
+    plt.scatter(x,y,c='red', marker='o')
+
+plt.title("Individuals' environment ""[%]""",fontsize=13)
+plt.xlabel('inland'+' '*74+'coastal',fontsize=11)
+plt.ylabel('urban'+' '*49+'rural',fontsize=11)
+
+plt.gca().spines['top']  .set_visible(False)
+plt.gca().spines['right'].set_visible(False)
+
+for i in range(len(df2)):
+     plt.text(df2.C[df2.Name ==z[i]],df2.R[df2.Name==z[i]],z[i], fontdict=dict(color='black', alpha=0.5, size=12))
+
+plt.xlim([0, 100])
+plt.ylim([0, 100])    #more ideas: https://matplotlib.org/stable/gallery/pie_and_polar_charts/polar_scatter.html
+
+placeholder.pyplot(fig)
+
+#__________________________________________________________________________________________________________________________________________________________________
+# SCATTER PLOT INLAND. RURAL - All Engagement Scope #### CON PROBLEMAS!!!
+#__________________________________________________________________________________________________________________________________________________________________
+#
+
+#Data preparation
+df2 = df_filtered
+
+#df2 = df2[df2['g30'].notna()] #Coastal Individual g30  <-- If i use this, I end up with 0 rows with information. Partners do not report for all engagement scope. 
+#df2 = df2[df2['g31'].notna()] #Rural Individual g31 
+#df2 = df2[df2['g458'].notna()] #Coastal Companies g458
+#df2 = df2[df2['g459'].notna()] #Rural Companies g459
+#df2 = df2[df2['g865'].notna()] #Costal Countries g865
+#df2 = df2[df2['g866'].notna()] #Rural Countries g866
+#df2 = df2[df2['g1272'].notna()] #Costal Region g1272
+#df2 = df2[df2['g1273'].notna()] #Rural Region g1273
+#df2 = df2[df2['g1679'].notna()] #Costal Cities g1679
+#df2 = df2[df2['g1680'].notna()] #Rural Cities g1680
+#df2 = df2[df2['g1679'].notna()] #Costal Natural System g1679
+#df2 = df2[df2['g1680'].notna()] #Rural Natural System g1680
+
+df2['g30'] = df2['g30'].fillna(0) #Coastal Individual g30  <-- Here might be the problem. I could not fint other way to prepare the serie to be converted to number. 
+df2['g31'] = df2['g31'].fillna(0) #Rural Individual g31
+df2['g458'] = df2['g458'].fillna(0) #Coastal Companies g458
+df2['g459'] = df2['g459'].fillna(0) #Rural Companies g459
+df2['g865'] = df2['g865'].fillna(0) #Costal Countries g865
+df2['g866'] = df2['g866'].fillna(0) #Rural Countries g866
+df2['g1272']= df2['g1272'].fillna(0) #Costal Region g1272
+df2['g1273'] = df2['g1273'].fillna(0) #Rural Region g1273
+df2['g1679'] = df2['g1679'].fillna(0) #Costal Cities g1679
+df2['g1680'] = df2['g1680'].fillna(0) #Rural Cities g1680
+df2['g2093'] = df2['g2093'].fillna(0) #Costal Natural System g2093
+df2['g2094'] = df2['g2094'].fillna(0) #Rural Natural System g2094
+
+df2['g30']  = df2['g30'].astype(int) #Coastal Individual g30 
+df2['g31']  = df2['g31'].astype(int) #Rural Individual g31 
+df2['g458']     = df2['g458'].astype(int) #Coastal Companies g458
+df2['g459']     = df2['g459'].astype(int) #Rural Companies g459
+df2['g865']     = df2['g865'].astype(int) #Costal Countries g865
+df2['g866']     = df2['g866'].astype(int) #Rural Countries g866
+df2['g1272']    = df2['g1272'].astype(int) #Costal Region g1272
+df2['g1273']    = df2['g1273'].astype(int) #Rural Region g1273
+df2['g1679']    = df2['g1679'].astype(int) #Costal Cities g1679
+df2['g1680']    = df2['g1680'].astype(int) #Rural Cities g1680
+df2['g2093']    = df2['g2093'].astype(int) #Costal Natural System g2093
+df2['g2094']    = df2['g2094'].astype(int) #Rural Natural System g2094
+
+costal_list = {'g30','g458','g865','g1272','g1679','g2093'}  #List of columns with % of presence in costal and inland areas.
+rural_list  = {'g31','g459','g866','g1273','g1680','g2094'}  #List of columns with % of presence in rural and urban areas.
+
+df2_costal  = df2[costal_list]
+df2_rural   = df2[rural_list ]
+
+df2['costal_average'] = df2_costal.mean(numeric_only=True, axis=1)  #Here i get the mean of all 6 series. This is a problem because Partners respond only to a few of them.
+df2['rural_average'] = df2_rural.mean(numeric_only=True, axis=1) #Here i get the mean of all 6 series. This is a problem because Partners respond only to a few of them.
+
+df2.rename(columns = {'costal_average':'C', 'rural_average':'R', 'Short name':'Name'}, inplace = True)
+
+#Scatterplot for coastal/rural in individual scope
+st.markdown("Scatterplot for coastal/rural in individual scope (Mean of % of all Engagement Scope)")
+st.markdown("Desafío: replicar este gráfico considerando el promedio de % que los Parntes reportan en los Engegament Scope que trabajan. Son un total de 6 Engagement Scope pero Partners no reportan al total de ellos.")
+st.markdown("Problema: no resulta. Hay un problema con el cálculo del promedio de los % Partners. Son en total 6 engagement scope. Pero Partnes responden solo en algunas de ellas. Esto implica que el promedio no puede calcularse en base a 6, sino a la cantidad específica de respuestas disponibles. Mi problema quizás fue que le puse valor 0 a todos los NaN. Esto lo hice así porque si aplicaba el criterio notna() me quedaba al final casi sin caso por que ningun Partner aplica a los 6 engagement scope al mismo tiempo.")
+
+x = df2['C']
+y = df2['R']
+z = df2['Name']
+
+fig = plt.figure(figsize=(10, 10))
+placeholder = st.empty()
+
 for i in range(len(df2)):
     plt.scatter(x,y,c='red', marker='o')
 
