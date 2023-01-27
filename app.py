@@ -262,6 +262,8 @@ placeholder.pyplot(fig)
 # SCATTER PLOT INLAND. RURAL - All Engagement Scope #### CON PROBLEMAS!!!
 #__________________________________________________________________________________________________________________________________________________________________
 #
+st.subheader('Gráfico con problemas')
+#st.subheader('Gráfico con problemas')
 
 #Data preparation
 df2 = df_filtered
