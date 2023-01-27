@@ -262,7 +262,7 @@ fig = plt.figure(figsize=(10, 10))
 
 for i in range(len(df2)):
     plt.scatter(x,y,c='blue', marker='o')
-plt.title("Scatterplot for coastal/rural (Mean of % of all Engagement Scope)",fontsize=14)
+plt.title("Scatterplot for coastal/rural (All Info)",fontsize=14)
 #plt.title("Individuals' environment ""[%]""",fontsize=14)
 plt.xlabel('Inland'+' '*74+'Coastal',fontsize=13)
 plt.ylabel('Urban'+' '*49+'Rural',fontsize=13)
