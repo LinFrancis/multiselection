@@ -252,7 +252,6 @@ df2 = df2[df2['rural_average'].notna()]
 df2.rename(columns = {'costal_average':'C', 'rural_average':'R', 'Short name':'Name'}, inplace = True)
 
 #Scatterplot for coastal/rural in individual scope
-st.markdown("Scatterplot for coastal/rural in individual scope (Mean of % of all Engagement Scope)")
 
 x = df2['C']
 y = df2['R']
@@ -263,7 +262,7 @@ fig = plt.figure(figsize=(10, 10))
 
 for i in range(len(df2)):
     plt.scatter(x,y,c='blue', marker='o')
-
+plt.title("Scatterplot for coastal/rural (Mean of % of all Engagement Scope)",fontsize=14)
 #plt.title("Individuals' environment ""[%]""",fontsize=14)
 plt.xlabel('Inland'+' '*74+'Coastal',fontsize=13)
 plt.ylabel('Urban'+' '*49+'Rural',fontsize=13)
