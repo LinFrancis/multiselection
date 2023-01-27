@@ -26,6 +26,7 @@ st.markdown(hide_table_row_index, unsafe_allow_html=True)
 #__________________________________________________________________________________________________________________________________________________________________
 #______
 #General Information Survey
+#______
 df_gi = pd.read_csv('GI_27012013.csv',sep=';', header=None, prefix="q").iloc[2:]
 df_gi.set_index("q0", inplace = True)
 df_gi.index.names = ['Master ID']
@@ -44,9 +45,11 @@ df_gi.rename(columns = { 'q1':'Initiative_name', 'q2':'Short name'}, inplace = T
 #creating new variables concatenating
 df_gi['Region']           = df_gi[['q39','q40','q41','q42','q43','q44','q45','q46','q47','q48']].apply(lambda x:'; '.join(x.dropna().astype(str)),axis=1)
 df_gi['Priority group']   = df_gi[['q29','q30','q31','q32','q33','q34','q35','q36','q37',     ]].apply(lambda x:'; '.join(x.dropna().astype(str)),axis=1)
-df_gi['Impact System']       = df_gi[['q50','q51','q52','q53','q54','q55'                        ]].apply(lambda x:'; '.join(x.dropna().astype(str)),axis=1)
+df_gi['Impact System']    = df_gi[['q50','q51','q52','q53','q54','q55'                        ]].apply(lambda x:'; '.join(x.dropna().astype(str)),axis=1)
+
 #____
 #Pledge Statement Survey
+#______
 df_pdg = pd.read_csv('Pledge_27012013.csv',sep=';', header=None, prefix="g").iloc[2:]
 df_pdg.set_index("g0", inplace = True)
 df_pdg.index.names = ['Master ID']
@@ -77,6 +80,18 @@ df_pdg["g25"] = pd.to_numeric(df_pdg["g25"]) #Indigenous or traditional communit
 df_pdg["g26"] = pd.to_numeric(df_pdg["g26"]) #Racial, ethnic and/or religious minorities ind
 df_pdg["g27"] = pd.to_numeric(df_pdg["g27"]) #Refugees ind
 df_pdg["g28"] = pd.to_numeric(df_pdg["g28"]) #Low income communities ind
+df_pdg["g30"] = pd.to_numeric(df_pdg["g30"])
+df_pdg["g31"] = pd.to_numeric(df_pdg["g31"])
+df_pdg["g458"] = pd.to_numeric(df_pdg["g458"])
+df_pdg["g459"] = pd.to_numeric(df_pdg["g459"])
+df_pdg["g865"] = pd.to_numeric(df_pdg["g865"])
+df_pdg["g1272"] = pd.to_numeric(df_pdg["g1272"])
+df_pdg["g1273"] = pd.to_numeric(df_pdg["g1273"])
+df_pdg["g1679"] = pd.to_numeric(df_pdg["g1679"])
+df_pdg["g1680"] = pd.to_numeric(df_pdg["g1680"])
+df_pdg["g2093"] = pd.to_numeric(df_pdg["g2093"])
+df_pdg["g2094"] = pd.to_numeric(df_pdg["g2094"])
+
 
 #creating new variables concatenating
 df_pdg['Engagement scope'] = df_pdg[['g13','g14','g15','g16','g17','g18']].apply(lambda x:'; '.join(x.dropna().astype(str)),axis=1)
@@ -216,126 +231,42 @@ st.write(s_fig_ra_general)
 
 
 #__________________________________________________________________________________________________________________________________________________________________
-# SCATTER PLOT INLAND. RURAL
+# SCATTER PLOT INLAND. RURAL - All Engagement Scope
 #__________________________________________________________________________________________________________________________________________________________________
 #
-
 #Data preparation
 df2 = df_filtered
 
-df2= df2[df2['g30'].notna()] #Individual coastal
-df2= df2[df2['g31' ].notna()] #Individual rural
-
-df2['g30'] = df2['g30'].astype(int) #Individual coastal
-df2['g31']   = df2['g31'  ].astype(int) #Individual rural
-
-df2.rename(columns = {'g30':'C', 'g31':'R', 'Short name':"Name"}, inplace = True)
-
-#Scatterplot for coastal/rural in individual scope
-st.markdown("Scatterplot for coastal/rural in individual scope (Only for Individuals Scope)")
-
-x = df2['C']
-y = df2['R']
-z = df2['Name']
-
-fig = plt.figure(figsize=(10, 10))
-placeholder = st.empty()
-for i in range(len(df2)):
-    plt.scatter(x,y,c='red', marker='o')
-
-plt.title("Individuals' environment ""[%]""",fontsize=13)
-plt.xlabel('inland'+' '*74+'coastal',fontsize=11)
-plt.ylabel('urban'+' '*49+'rural',fontsize=11)
-
-plt.gca().spines['top']  .set_visible(False)
-plt.gca().spines['right'].set_visible(False)
-
-for i in range(len(df2)):
-     plt.text(df2.C[df2.Name ==z[i]],df2.R[df2.Name==z[i]],z[i], fontdict=dict(color='black', alpha=0.5, size=12))
-
-plt.xlim([0, 100])
-plt.ylim([0, 100])    #more ideas: https://matplotlib.org/stable/gallery/pie_and_polar_charts/polar_scatter.html
-
-placeholder.pyplot(fig)
-
-#__________________________________________________________________________________________________________________________________________________________________
-# SCATTER PLOT INLAND. RURAL - All Engagement Scope #### CON PROBLEMAS!!!
-#__________________________________________________________________________________________________________________________________________________________________
-#
-st.subheader('Gráfico con problemas')
-#st.subheader('Gráfico con problemas')
-
-#Data preparation
-df2 = df_filtered
-
-#df2 = df2[df2['g30'].notna()] #Coastal Individual g30  <-- If i use this, I end up with 0 rows with information. Partners do not report for all engagement scope. 
-#df2 = df2[df2['g31'].notna()] #Rural Individual g31 
-#df2 = df2[df2['g458'].notna()] #Coastal Companies g458
-#df2 = df2[df2['g459'].notna()] #Rural Companies g459
-#df2 = df2[df2['g865'].notna()] #Costal Countries g865
-#df2 = df2[df2['g866'].notna()] #Rural Countries g866
-#df2 = df2[df2['g1272'].notna()] #Costal Region g1272
-#df2 = df2[df2['g1273'].notna()] #Rural Region g1273
-#df2 = df2[df2['g1679'].notna()] #Costal Cities g1679
-#df2 = df2[df2['g1680'].notna()] #Rural Cities g1680
-#df2 = df2[df2['g1679'].notna()] #Costal Natural System g1679
-#df2 = df2[df2['g1680'].notna()] #Rural Natural System g1680
-
-df2['g30'] = df2['g30'].fillna(0) #Coastal Individual g30  <-- Here might be the problem. I could not fint other way to prepare the serie to be converted to number. 
-df2['g31'] = df2['g31'].fillna(0) #Rural Individual g31
-df2['g458'] = df2['g458'].fillna(0) #Coastal Companies g458
-df2['g459'] = df2['g459'].fillna(0) #Rural Companies g459
-df2['g865'] = df2['g865'].fillna(0) #Costal Countries g865
-df2['g866'] = df2['g866'].fillna(0) #Rural Countries g866
-df2['g1272']= df2['g1272'].fillna(0) #Costal Region g1272
-df2['g1273'] = df2['g1273'].fillna(0) #Rural Region g1273
-df2['g1679'] = df2['g1679'].fillna(0) #Costal Cities g1679
-df2['g1680'] = df2['g1680'].fillna(0) #Rural Cities g1680
-df2['g2093'] = df2['g2093'].fillna(0) #Costal Natural System g2093
-df2['g2094'] = df2['g2094'].fillna(0) #Rural Natural System g2094
-
-df2['g30']  = df2['g30'].astype(int) #Coastal Individual g30 
-df2['g31']  = df2['g31'].astype(int) #Rural Individual g31 
-df2['g458']     = df2['g458'].astype(int) #Coastal Companies g458
-df2['g459']     = df2['g459'].astype(int) #Rural Companies g459
-df2['g865']     = df2['g865'].astype(int) #Costal Countries g865
-df2['g866']     = df2['g866'].astype(int) #Rural Countries g866
-df2['g1272']    = df2['g1272'].astype(int) #Costal Region g1272
-df2['g1273']    = df2['g1273'].astype(int) #Rural Region g1273
-df2['g1679']    = df2['g1679'].astype(int) #Costal Cities g1679
-df2['g1680']    = df2['g1680'].astype(int) #Rural Cities g1680
-df2['g2093']    = df2['g2093'].astype(int) #Costal Natural System g2093
-df2['g2094']    = df2['g2094'].astype(int) #Rural Natural System g2094
-
-costal_list = {'g30','g458','g865','g1272','g1679','g2093'}  #List of columns with % of presence in costal and inland areas.
-rural_list  = {'g31','g459','g866','g1273','g1680','g2094'}  #List of columns with % of presence in rural and urban areas.
+costal_list = {'g30','g458','g865','g1272','g1679','g2093'}
+rural_list  = {'g31','g459','g866','g1273','g1680','g2094'}
 
 df2_costal  = df2[costal_list]
 df2_rural   = df2[rural_list ]
 
-df2['costal_average'] = df2_costal.mean(numeric_only=True, axis=1)  #Here i get the mean of all 6 series. This is a problem because Partners respond only to a few of them.
-df2['rural_average'] = df2_rural.mean(numeric_only=True, axis=1) #Here i get the mean of all 6 series. This is a problem because Partners respond only to a few of them.
+df2['costal_average'] = df2_costal.mean(axis=1,numeric_only=True,skipna=True)
+df2['rural_average'] = df2_rural.mean(axis=1,numeric_only=True,skipna=True)
+
+df2 = df2[df2['costal_average'].notna()]
+df2 = df2[df2['rural_average'].notna()]
 
 df2.rename(columns = {'costal_average':'C', 'rural_average':'R', 'Short name':'Name'}, inplace = True)
 
 #Scatterplot for coastal/rural in individual scope
 st.markdown("Scatterplot for coastal/rural in individual scope (Mean of % of all Engagement Scope)")
-st.markdown("Desafío: replicar este gráfico considerando el promedio de % que los Parntes reportan en los Engegament Scope que trabajan. Son un total de 6 Engagement Scope pero Partners no reportan al total de ellos.")
-st.markdown("Problema: no resulta. Hay un problema con el cálculo del promedio de los % Partners. Son en total 6 engagement scope. Pero Partnes responden solo en algunas de ellas. Esto implica que el promedio no puede calcularse en base a 6, sino a la cantidad específica de respuestas disponibles. Mi problema quizás fue que le puse valor 0 a todos los NaN. Esto lo hice así porque si aplicaba el criterio notna() me quedaba al final casi sin caso por que ningun Partner aplica a los 6 engagement scope al mismo tiempo.")
 
 x = df2['C']
 y = df2['R']
 z = df2['Name']
 
 fig = plt.figure(figsize=(10, 10))
-placeholder = st.empty()
+#placeholder = st.empty()
 
 for i in range(len(df2)):
-    plt.scatter(x,y,c='red', marker='o')
+    plt.scatter(x,y,c='pink', marker='o')
 
-plt.title("Individuals' environment ""[%]""",fontsize=13)
-plt.xlabel('inland'+' '*74+'coastal',fontsize=11)
-plt.ylabel('urban'+' '*49+'rural',fontsize=11)
+#plt.title("Individuals' environment ""[%]""",fontsize=14)
+plt.xlabel('Inland'+' '*74+'Coastal',fontsize=13)
+plt.ylabel('Urban'+' '*49+'Rural',fontsize=13)
 
 plt.gca().spines['top']  .set_visible(False)
 plt.gca().spines['right'].set_visible(False)
@@ -346,4 +277,48 @@ for i in range(len(df2)):
 plt.xlim([0, 100])
 plt.ylim([0, 100])    #more ideas: https://matplotlib.org/stable/gallery/pie_and_polar_charts/polar_scatter.html
 
-placeholder.pyplot(fig)
+col1, col2, col3 = st.columns((0.4,2.2,0.4))
+col2.pyplot(fig)
+
+
+#__________________________________________________________________________________________________________________________________________________________________
+# SCATTER PLOT INLAND. RURAL
+#__________________________________________________________________________________________________________________________________________________________________
+#
+#Data preparation
+#df2 = df_filtered
+
+#df2= df2[df2['g30'].notna()] #Individual coastal
+#df2= df2[df2['g31' ].notna()] #Individual rural
+
+#df2['g30'] = df2['g30'].astype(int) #Individual coastal
+#df2['g31']   = df2['g31'  ].astype(int) #Individual rural
+
+#df2.rename(columns = {'g30':'C', 'g31':'R', 'Short name':"Name"}, inplace = True)
+
+#Scatterplot for coastal/rural in individual scope
+#st.markdown("Scatterplot for coastal/rural in individual scope (Only for Individuals Scope)")
+
+#x = df2['C']
+#y = df2['R']
+#z = df2['Name']
+
+#fig = plt.figure(figsize=(10, 10))
+#placeholder = st.empty()
+#for i in range(len(df2)):
+#    plt.scatter(x,y,c='red', marker='o')
+
+#plt.title("Individuals' environment ""[%]""",fontsize=13)
+#plt.xlabel('inland'+' '*74+'coastal',fontsize=11)
+#plt.ylabel('urban'+' '*49+'rural',fontsize=11)
+
+#plt.gca().spines['top']  .set_visible(False)
+#plt.gca().spines['right'].set_visible(False)
+
+#for i in range(len(df2)):
+#     plt.text(df2.C[df2.Name ==z[i]],df2.R[df2.Name==z[i]],z[i], fontdict=dict(color='black', alpha=0.5, size=12))
+
+#plt.xlim([0, 100])
+#plt.ylim([0, 100])    #more ideas: https://matplotlib.org/stable/gallery/pie_and_polar_charts/polar_scatter.html
+
+#placeholder.pyplot(fig)
