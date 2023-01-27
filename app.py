@@ -262,7 +262,7 @@ fig = plt.figure(figsize=(10, 10))
 #placeholder = st.empty()
 
 for i in range(len(df2)):
-    plt.scatter(x,y,c='pink', marker='o')
+    plt.scatter(x,y,c='blue', marker='o')
 
 #plt.title("Individuals' environment ""[%]""",fontsize=14)
 plt.xlabel('Inland'+' '*74+'Coastal',fontsize=13)
