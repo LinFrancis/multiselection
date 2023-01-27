@@ -197,7 +197,7 @@ col1.caption('Original dataframe shape')
 col1.write(df.shape)
 col2.caption('Filtered dataframe shape')
 col2.write(df_filtered.shape)
-#st.write(df_filtered[['Initiative_name','Short name','Priority group','Impact System','Engagement scope']])
+st.write(df_filtered[['Initiative_name','Short name','Priority group','Impact System','Engagement scope']])
 
 
 #__________________________________________________________________________________________________________________________________________________________________
