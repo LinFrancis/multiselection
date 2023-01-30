@@ -4,8 +4,7 @@ import numpy as np
 import plotly.express as px
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
-#import mplcursors
-#import re
+
 
 #__________________________________________________________________________________________________________________________________________________________________
 # Dashboard structure
@@ -24,9 +23,9 @@ st.markdown(hide_table_row_index, unsafe_allow_html=True)
 #__________________________________________________________________________________________________________________________________________________________________
 # Export data
 #__________________________________________________________________________________________________________________________________________________________________
-#______
+#__________________________
 #General Information Survey
-#______
+#__________________________
 df_gi = pd.read_csv('GI_27012013.csv',sep=';', header=None, prefix="q").iloc[2:]
 df_gi.set_index("q0", inplace = True)
 df_gi.index.names = ['Master ID']
@@ -47,20 +46,18 @@ df_gi['Region']           = df_gi[['q39','q40','q41','q42','q43','q44','q45','q4
 df_gi['Priority group']   = df_gi[['q29','q30','q31','q32','q33','q34','q35','q36','q37',     ]].apply(lambda x:'; '.join(x.dropna().astype(str)),axis=1)
 df_gi['Impact System']    = df_gi[['q50','q51','q52','q53','q54','q55'                        ]].apply(lambda x:'; '.join(x.dropna().astype(str)),axis=1)
 
-#____
+#__________________________
 #Pledge Statement Survey
-#______
+#__________________________
 df_pdg = pd.read_csv('Pledge_27012013.csv',sep=';', header=None, prefix="g").iloc[2:]
 df_pdg.set_index("g0", inplace = True)
 df_pdg.index.names = ['Master ID']
 df_pdg = df_pdg.dropna(how = 'all')
 df_pdg_names = pd.read_csv('Pledge_27012013.csv',sep=';').iloc[1:]
 ##rename
-df_pdg['g28'] = df_pdg['g28'].replace(['Poor'], 'Low income communities')
-
 replacement_mapping_dict = {"Not targeted.": "0","2": "1","Mildly targeted but not exclusively.": "2","4": "3",
     "Main or unique target.": "4",}
-
+df_pdg['g28'] = df_pdg['g28'].replace(['Poor'], 'Low income communities')
 df_pdg["g20"] = df_pdg["g20"].replace(replacement_mapping_dict) #Women and girls ind
 df_pdg["g21"] = df_pdg["g21"].replace(replacement_mapping_dict) #LGBTQIA+ ind
 df_pdg["g22"] = df_pdg["g22"].replace(replacement_mapping_dict) #Elderly ind
@@ -70,7 +67,7 @@ df_pdg["g25"] = df_pdg["g25"].replace(replacement_mapping_dict) #Indigenous or t
 df_pdg["g26"] = df_pdg["g26"].replace(replacement_mapping_dict) #Racial, ethnic and/or religious minorities ind
 df_pdg["g27"] = df_pdg["g27"].replace(replacement_mapping_dict) #Refugees ind
 df_pdg["g28"] = df_pdg["g28"].replace(replacement_mapping_dict) #Low income communities ind
-
+##change format
 df_pdg["g20"] = pd.to_numeric(df_pdg["g20"]) #Women and girls ind
 df_pdg["g21"] = pd.to_numeric(df_pdg["g21"]) #LGBTQIA+ ind
 df_pdg["g22"] = pd.to_numeric(df_pdg["g22"]) #Elderly ind
@@ -91,15 +88,42 @@ df_pdg["g1679"] = pd.to_numeric(df_pdg["g1679"])
 df_pdg["g1680"] = pd.to_numeric(df_pdg["g1680"])
 df_pdg["g2093"] = pd.to_numeric(df_pdg["g2093"])
 df_pdg["g2094"] = pd.to_numeric(df_pdg["g2094"])
+##Creating list of series needed to treat multiquestionsº.
+hazard_list_ind = df_pdg.iloc[:, 32:50].columns.values.tolist() #Individual Engagement
+hazard_list_comp = df_pdg.iloc[:, 460:478].columns.values.tolist() #Companies engagement
+hazard_list_countries = df_pdg.iloc[:, 867:885].columns.values.tolist() #Countries
+hazard_list_region = df_pdg.iloc[:, 1274:1292].columns.values.tolist() #Regions
+hazard_list_cities = df_pdg.iloc[:, 1681:1699].columns.values.tolist() #Cities
+hazard_list_nat_sys  = df_pdg.iloc[:, 2095:2113].columns.values.tolist() #Natural Systems
+hazards_options = ['Heat stress - lives & livelihoods combined','Heat stress - livelihoods (work)','Heat stress - lives','Extreme heat','Extreme cold','Snow and ice','Drought (agriculture focus)','Drought (other sectors)','Water stress (urban focus)','Water stress (rural focus)','Fire weather (risk of wildfires)','Urban flooding','Riverine flooding','Coastal flooding','Other coastal events','Oceanic events','Hurricanes/cyclones','Extreme wind']
+#All Hazards Treatment
+df_pdg[hazard_list_ind] = df_pdg[hazard_list_ind].where(df_pdg['g32'] != 'All Hazard', hazards_options)  #Recode "All Hazard" = Apply to all Hazard"
+df_pdg[hazard_list_comp] = df_pdg[hazard_list_comp].where(df_pdg['g460'] != 'All Hazard', hazards_options)
+df_pdg[hazard_list_countries] = df_pdg[hazard_list_countries].where(df_pdg['g867'] != 'All Hazard', hazards_options)
+df_pdg[hazard_list_region] = df_pdg[hazard_list_region].where(df_pdg['g1274'] != 'All Hazard', hazards_options)
+df_pdg[hazard_list_cities] = df_pdg[hazard_list_cities].where(df_pdg['g1681'] != 'All Hazard', hazards_options)
+df_pdg[hazard_list_nat_sys] = df_pdg[hazard_list_nat_sys].where(df_pdg['g2095'] != 'All Hazard', hazards_options)
 
+#replacement_mapping_dict = {"Heat stress - lives & livelihoods combined": "Heat stress - lives & livelihoods combined"," Heat stress - lives": "Heat stress - lives",}
+#df_pdg[hazard_list_ind] = df_pdg[hazard_list_ind].replace(replacement_mapping_dict)
+#df_pdg[hazard_list_comp] = df_pdg[hazard_list_comp].replace(replacement_mapping_dict)
+#df_pdg[hazard_list_countries] = df_pdg[hazard_list_countries].replace(replacement_mapping_dict)
+#df_pdg[hazard_list_region] = df_pdg[hazard_list_region].replace(replacement_mapping_dict)
+#df_pdg[hazard_list_cities] = df_pdg[hazard_list_cities].replace(replacement_mapping_dict)
+#df_pdg[hazard_list_nat_sys] = df_pdg[hazard_list_nat_sys].replace(replacement_mapping_dict)
 
-#creating new variables concatenating
+#Concatenating columns
 df_pdg['Engagement scope'] = df_pdg[['g13','g14','g15','g16','g17','g18']].apply(lambda x:'; '.join(x.dropna().astype(str)),axis=1)
-
-#hazards for indivdual engagement
-#table_hazards = df_pdg.iloc[:, 33:51] #selecting all columns and making a new dataframe
-#v_hazards = table_hazards.columns.values.tolist() #making a list with the names of the columns
-#df_pdg['Hazards'] = df_pdg[v_hazards].apply(lambda x:'; '.join(x.dropna().astype(str)),axis=1)
+df_pdg['Hazards_ind'] = df_pdg[hazard_list_ind].apply(lambda x:'; '.join(x.dropna().astype(str)),axis=1) #Concatenate
+df_pdg['Hazards_comp'] = df_pdg[hazard_list_comp].apply(lambda x:'; '.join(x.dropna().astype(str)),axis=1)
+df_pdg['Hazards_countries'] = df_pdg[hazard_list_countries].apply(lambda x:'; '.join(x.dropna().astype(str)),axis=1)
+df_pdg['Hazards_region'] = df_pdg[hazard_list_region].apply(lambda x:'; '.join(x.dropna().astype(str)),axis=1)
+df_pdg['Hazards_cities'] = df_pdg[hazard_list_cities].apply(lambda x:'; '.join(x.dropna().astype(str)),axis=1)
+df_pdg['Hazards_nat_sys'] = df_pdg[hazard_list_nat_sys].apply(lambda x:'; '.join(x.dropna().astype(str)),axis=1)
+df_pdg['All_Hazards'] = df_pdg[['Hazards_ind','Hazards_comp','Hazards_countries','Hazards_region','Hazards_cities','Hazards_nat_sys']].apply(lambda x:'; '.join(x.dropna().astype(str)),axis=1)
+#Confirmation that works!
+#st.write(hazard_list_ind,hazard_list_comp, hazard_list_countries,hazard_list_region,hazard_list_cities,hazard_list_nat_sys)
+#st.table(df_pdg[['g32','Hazards_ind','g460','Hazards_comp','g867','Hazards_countries','g1274','Hazards_region','g1681','Hazards_cities','g2095','Hazards_nat_sys','All_Hazards']])
 
 #continents for indivdual engagement
 #table_continents_ind = df_pdg.iloc[:, 52:57] #selecting all columns and making a new dataframe
@@ -137,24 +161,31 @@ cats_defs = [
     ['Region',['Oceania & Pacific','East Asia','South Asia','East Europe & Central Asia','Northern & Western Europe','North Africa and the Middle East','Sub-Saharan Africa','South America','Central America and Caribbean','North America','']],
     ['Priority group',  ['Women and girls','LGBTQIA+ people','Elderly','Children & Youth','Indigenous and traditional communities','Ethnic or religious minorities','Refugees','Disabled People','Low income communities','']],
     ['Impact System',      ['Cross-cutting enablers: Planning and Finance','Food and Agriculture Systems','Coastal and Oceanic Systems','Water and Nature Systems','Human Settlement Systems','Infrastructure Systems','']],
-    ['Engagement scope',['Individuals','Companies','Countries','Regions','Cities','Natural Systems','']]  ] #extend the tables cats_defs, cats, defs, poss if needed
+    ['Engagement scope',['Individuals','Companies','Countries','Regions','Cities','Natural Systems','']],   #extend the tables cats_defs, cats, defs, poss if needed
+    ['All Hazards',['Heat stress - lives & livelihoods combined','Heat stress - livelihoods (work)','Heat stress - lives','Extreme heat','Extreme cold','Snow and ice','Drought (agriculture focus)','Drought (other sectors)','Water stress (urban focus)','Water stress (rural focus)','Fire weather (risk of wildfires)','Urban flooding','Riverine flooding','Coastal flooding','Other coastal events','Oceanic events','Hurricanes/cyclones','Extreme wind','']] ]  #extend the tables cats_defs, cats, de
 
-cats = [cats_defs[0][0], cats_defs[1][0]     , cats_defs[2][0]  ,cats_defs[3][0]       ]  #list of question categories
-defs = [cats_defs[0][1], cats_defs[1][1]     , cats_defs[2][1]  ,cats_defs[3][1]       ]  #list of possible answers
-poss = [df['Region']   , df['Priority group'], df['Impact System'] ,df['Engagement scope']]  #correspoding answers
+cats = [cats_defs[0][0], cats_defs[1][0]     , cats_defs[2][0]  ,cats_defs[3][0],cats_defs[4][0]       ]  #list of question categories
+defs = [cats_defs[0][1], cats_defs[1][1]     , cats_defs[2][1]  ,cats_defs[3][1],cats_defs[4][1]      ]  #list of possible answers
+poss = [df['Region']   , df['Priority group'], df['Impact System'] ,df['Engagement scope'],df['All_Hazards']]  #correspoding answers
 
 regions_options = ['Oceania & Pacific','East Asia','South Asia','East Europe & Central Asia','Northern & Western Europe','North Africa and the Middle East','Sub-Saharan Africa','South America','Central America and Caribbean','North America']
 priority_options = ['Women and girls','LGBTQIA+ people','Elderly','Children & Youth','Indigenous and traditional communities','Ethnic or religious minorities','Refugees','Disabled People','Low income communities']
 areas_options = ['Cross-cutting enablers: Planning and Finance','Food and Agriculture Systems','Coastal and Oceanic Systems','Water and Nature Systems','Human Settlement Systems','Infrastructure Systems']
 engagement_options = ['Individuals','Companies','Countries','Regions','Cities','Natural Systems']
+hazards_options = ['Heat stress - lives & livelihoods combined','Heat stress - livelihoods (work)','Heat stress - lives','Extreme heat','Extreme cold','Snow and ice','Drought (agriculture focus)','Drought (other sectors)','Water stress (urban focus)','Water stress (rural focus)','Fire weather (risk of wildfires)','Urban flooding','Riverine flooding','Coastal flooding','Other coastal events','Oceanic events','Hurricanes/cyclones','Extreme wind']
 
-st.sidebar.write('Buscador')
+st.sidebar.subheader('Buscador')
+st.sidebar.markdown('**Resiliencia**')
 areas_selection = st.sidebar.multiselect('Impact Systems',      areas_options)
 engagement_selection = st.sidebar.multiselect('Engagement scope', engagement_options)   #add further multiselect if needed
+st.sidebar.markdown('**Vulnerablilidad**')
 priority_selection = st.sidebar.multiselect('Priority groups',   priority_options)
+st.sidebar.markdown('**Amenazas**')
+hazards_selection = st.sidebar.multiselect('Hazards',   hazards_options)
+st.sidebar.markdown('**Territorialidad**')
 macro_region_selection = st.sidebar.multiselect('Macro Regions',    regions_options)
 
-selection = [macro_region_selection,priority_selection,areas_selection,engagement_selection]           #extend if more multiselect
+selection = [macro_region_selection,priority_selection,areas_selection,engagement_selection,hazards_selection]           #extend if more multiselect
 
 i=0
 while i < len(selection):
@@ -197,7 +228,19 @@ col1.caption('Original dataframe shape')
 col1.write(df.shape)
 col2.caption('Filtered dataframe shape')
 col2.write(df_filtered.shape)
-st.write(df_filtered[['Initiative_name','Short name','Priority group','Impact System','Engagement scope']])
+st.write(df_filtered[['Initiative_name','Short name','Priority group','Impact System','Engagement scope','Region','All_Hazards']])
+
+
+#__________________________________________________________________________________________________________________________________________________________________
+# HAZARDS  PLEDGE
+#__________________________________________________________________________________________________________________________________________________________________
+df2 = df_filtered['All_Hazards'].str.split(";", expand=True).apply(lambda x: x.str.strip())
+df2 = df2.stack().value_counts()#(normalize=True)
+df2 = df2.iloc[1:].sort_index().reset_index(name='Frecuency')  #Check what happend whit blank information.
+fig = px.treemap(df2, path=[px.Constant("Hazards distribution"),'index'], values = 'Frecuency')
+fig.update_traces(root_color="lightgray")
+fig.update_layout(margin = dict(t=50, l=25, r=25, b=25))
+st.plotly_chart(fig)
 
 
 #__________________________________________________________________________________________________________________________________________________________________
@@ -211,15 +254,15 @@ list = {'g20','g21','g22','g23','g24','g25','g26','g27','g28'} #making a list wi
 
 df2= df2[df2[list].notna()] #cleaning na
 
-pg0 = df_pdg["g20"].mean() #Women and girls
-pg1 = df_pdg["g21"].mean() #LGBTQIA+
-pg2 = df_pdg["g22"].mean() #Elderly
-pg3 = df_pdg["g23"].mean() #Children and Youth
-pg4 = df_pdg["g24"].mean() #Disabled
-pg5 = df_pdg["g25"].mean() #Indigenous or traditional communities
-pg6 = df_pdg["g26"].mean() #Racial, ethnic and/or religious minorities
-pg7 = df_pdg["g27"].mean() #Refugees
-pg8 = df_pdg["g28"].mean() #Low income communities
+pg0 = df2["g20"].mean() #Women and girls
+pg1 = df2["g21"].mean() #LGBTQIA+
+pg2 = df2["g22"].mean() #Elderly
+pg3 = df2["g23"].mean() #Children and Youth
+pg4 = df2["g24"].mean() #Disabled
+pg5 = df2["g25"].mean() #Indigenous or traditional communities
+pg6 = df2["g26"].mean() #Racial, ethnic and/or religious minorities
+pg7 = df2["g27"].mean() #Refugees
+pg8 = df2["g28"].mean() #Low income communities
 
 s_df2 = pd.DataFrame(dict(
     r=[pg0, pg1, pg2, pg3, pg4, pg5, pg6, pg7, pg8],
@@ -252,6 +295,7 @@ df2 = df2[df2['rural_average'].notna()]
 df2.rename(columns = {'costal_average':'C', 'rural_average':'R', 'Short name':'Name'}, inplace = True)
 
 #Scatterplot for coastal/rural in individual scope
+st.markdown("Scatterplot for coastal/rural in individual scope (Mean of % of all Engagement Scope)")
 
 x = df2['C']
 y = df2['R']
@@ -262,7 +306,7 @@ fig = plt.figure(figsize=(10, 10))
 
 for i in range(len(df2)):
     plt.scatter(x,y,c='blue', marker='o')
-plt.title("Scatterplot for coastal/rural (All Info)",fontsize=14)
+
 #plt.title("Individuals' environment ""[%]""",fontsize=14)
 plt.xlabel('Inland'+' '*74+'Coastal',fontsize=13)
 plt.ylabel('Urban'+' '*49+'Rural',fontsize=13)
