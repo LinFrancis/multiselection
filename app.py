@@ -5,7 +5,7 @@ import plotly.express as px
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
 import seaborn as sns
-import matplotlib.ticker as ticker
+
 
 
 #__________________________________________________________________________________________________________________________________________________________________
