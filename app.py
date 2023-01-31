@@ -124,7 +124,6 @@ df_pdg['Natural Systems Types'] = df_pdg[nat_syst_type_list].apply(lambda x:'; '
 #Confirmation that works!
     #st.write(hazard_list_ind,hazard_list_comp, hazard_list_countries,hazard_list_region,hazard_list_cities,hazard_list_nat_sys)
     #st.table(df_pdg[['g32','Hazards_ind','g460','Hazards_comp','g867','Hazards_countries','g1274','Hazards_region','g1681','Hazards_cities','g2095','Hazards_nat_sys','All_Hazards']])
-
 #continents for indivdual engagement
 #table_continents_ind = df_pdg.iloc[:, 52:57] #selecting all columns and making a new dataframe
 #v_continents_ind = table_continents_ind.columns.values.tolist() #making a list with the names of the columns
@@ -156,7 +155,6 @@ df_len = len(df.index)
 # MULTISELECTOR
 #__________________________________________________________________________________________________________________________________________________________________
 #
-
 cats_defs = [
     ['Region',['Oceania & Pacific','East Asia','South Asia','East Europe & Central Asia','Northern & Western Europe','North Africa and the Middle East','Sub-Saharan Africa','South America','Central America and Caribbean','North America','']],
     ['Priority group',  ['Women and girls','LGBTQIA+ people','Elderly','Children & Youth','Indigenous and traditional communities','Ethnic or religious minorities','Refugees','Disabled People','Low income communities','']],
@@ -174,18 +172,19 @@ areas_options = ['Cross-cutting enablers: Planning and Finance','Food and Agricu
 engagement_options = ['Individuals','Companies','Countries','Regions','Cities','Natural Systems']
 hazards_options = ['Heat stress - lives & livelihoods combined','Heat stress - livelihoods (work)','Heat stress - lives','Extreme heat','Extreme cold','Snow and ice','Drought (agriculture focus)','Drought (other sectors)','Water stress (urban focus)','Water stress (rural focus)','Fire weather (risk of wildfires)','Urban flooding','Riverine flooding','Coastal flooding','Other coastal events','Oceanic events','Hurricanes/cyclones','Extreme wind']
 
-st.sidebar.subheader('Buscador')
-st.sidebar.markdown('**Resiliencia**')
-areas_selection = st.sidebar.multiselect('Impact Systems',      areas_options)
-engagement_selection = st.sidebar.multiselect('Engagement scope', engagement_options)   #add further multiselect if needed
-st.sidebar.markdown('**Vulnerablilidad**')
-priority_selection = st.sidebar.multiselect('Priority groups',   priority_options)
-st.sidebar.markdown('**Amenazas**')
-hazards_selection = st.sidebar.multiselect('Hazards',   hazards_options)
-st.sidebar.markdown('**Territorialidad**')
-macro_region_selection = st.sidebar.multiselect('Macro Regions',    regions_options)
+st.sidebar.subheader("Select R2R Partner Information")
+st.sidebar.caption("If no specific filter is selected, all available information regarding R2R partners will be displayed. Please select filters for a more targeted display.")
+#st.sidebar.markdown('**Resiliencia**')
+areas_selection = st.sidebar.multiselect("Partner's Impact Systems",      areas_options)
+engagement_selection = st.sidebar.multiselect("Partner's Engagement scope", engagement_options)  #add further multiselect if needed
+#st.sidebar.markdown('**Vulnerablilidad**')
+priority_selection = st.sidebar.multiselect('Priority groups aimed to make more resilient',   priority_options)
+#st.sidebar.markdown('**Amenazas**')
+hazards_selection = st.sidebar.multiselect('Hazards to provide resilience',   hazards_options)
+#st.sidebar.markdown('**Territorialidad**')
+macro_region_selection = st.sidebar.multiselect('Macro Regions where they operate',    regions_options)
 
-selection = [macro_region_selection,priority_selection,areas_selection,engagement_selection,hazards_selection]           #extend if more multiselect
+selection = [macro_region_selection,priority_selection,areas_selection,engagement_selection,hazards_selection]   #extend if more multiselect
 
 i=0
 while i < len(selection):
@@ -221,17 +220,32 @@ df_filtered.set_index("Master ID", inplace = True)
 # MAIN RESULTS
 #__________________________________________________________________________________________________________________________________________________________________
 #
-st.markdown('Resultados')
+selection_all = [["Oceania & Pacific","East Asia","South Asia","East Europe & Central Asia","Northern & Western Europe","North Africa and the Middle East","Sub-Saharan Africa","South America","Central America and Caribbean","North America",""],
+  ["Women and girls","LGBTQIA+ people","Elderly","Children & Youth","Indigenous and traditional communities","Ethnic or religious minorities","Refugees","Disabled People","Low income communities",""],
+  ["Cross-cutting enablers: Planning and Finance","Food and Agriculture Systems","Coastal and Oceanic Systems","Water and Nature Systems","Human Settlement Systems","Infrastructure Systems",""],
+  ["Individuals","Companies","Countries","Regions","Cities","Natural Systems",""],
+  ["Heat stress - lives & livelihoods combined","Heat stress - livelihoods (work)","Heat stress - lives","Extreme heat","Extreme cold","Snow and ice","Drought (agriculture focus)","Drought (other sectors)","Water stress (urban focus)","Water stress (rural focus)","Fire weather (risk of wildfires)","Urban flooding","Riverine flooding","Coastal flooding","Other coastal events","Oceanic events","Hurricanes/cyclones","Extreme wind",""]]
+
+if selection == selection_all:
+    st.subheader('Complete R2R Partners Information on display')
+else:
+    st.subheader('Displayed results show R2R Partners Information meeting all selected criteria.')
+
 col1,col2,col3,col4 = st.columns((1,1,1,3))
 col1.caption('Original dataframe shape')
 col1.write(df.shape)
 col2.caption('Filtered dataframe shape')
 col2.write(df_filtered.shape)
-st.write(df_filtered[['Initiative_name','Short name','Priority group','Impact System','Engagement scope','Region','All_Hazards']])
-
+with st.expander("Review Raw Data"):
+        st.write(df_filtered[['Initiative_name','Short name','Priority group','Impact System','Engagement scope','Region','All_Hazards']])
+st.markdown("""---""")
 #__________________________________________________________________________________________________________________________________________________________________
 # HAZARDS  PLEDGE
 #__________________________________________________________________________________________________________________________________________________________________
+#Sample size hazards from selection.
+df2_sz = df_filtered['All_Hazards'].replace(['; ; ; ; ; '], np.nan).dropna()
+sz = str(df2_sz.count())
+#dataframe to workwith (All data from the selection).
 df2 = df_filtered['All_Hazards'].str.split(";", expand=True).apply(lambda x: x.str.strip())
 df2 = df2.stack().value_counts()
 df2 = df2.iloc[1:].sort_index().reset_index(name='Frecuency')  #Check what happend whit blank information.
@@ -246,18 +260,30 @@ coastal_list  = {'Other coastal events':'Coastal / Ocean','Oceanic events':'Coas
 wind_list     = {'Hurricanes/cyclones':'Wind','Extreme wind':'Wind'}
 hazard_dictionary = {**heat_list,**cold_list,**drought_list,**water_list,**fire_list,**flooding_list,**coastal_list,**wind_list}
 df2['group'] = df2['index'].map(hazard_dictionary)
-df2['Percentaje'] = ((df2['Frecuency']/df2['Frecuency'].sum())*100).round(2)
-
+df2['Percentaje'] = ((df2['Frecuency']/df2['Frecuency'].sum())*100).round(1)
 #treemap
-fig = px.treemap(df2, path=[px.Constant("R2R Pledges to Hazards"),'group','index'], values = 'Percentaje')
+fig = px.treemap(df2, path=[px.Constant("Hazards"),'group','index'], values = 'Percentaje')
 fig.update_traces(root_color="lightgray")
+fig.update_layout(title_text='Hazards aimed to provide resilience by R2R Partners')
 fig.update_layout(margin = dict(t=50, l=25, r=25, b=25))
+if selection == selection_all:
+    fig.add_annotation(x=1, y=0,
+                text='Out of '+ sz +' Partners reporting information related to Harzards (Source: All Data. R2R Pledge Attributes Survey)',showarrow=False,
+                yshift=-20)
+else:
+    fig.add_annotation(x=1, y=0,
+                text='Out of '+ sz +' Partners reporting information related to Harzards (Source: Data filtered by users selection. R2R Pledge Attributes Survey)',showarrow=False,
+                yshift=-20)
 st.plotly_chart(fig)
-
+st.markdown("""---""")
 #__________________________________________________________________________________________________________________________________________________________________
 # PRIORITY GROUPS PLEDGE
 #__________________________________________________________________________________________________________________________________________________________________
 #
+#Sample size hazards from selection.
+df2_sz = df_filtered['Priority group'].replace(['; ; ; ; ; '], np.nan).dropna()
+sz = str(df2_sz.count())
+#dataframe to workwith (All data from the selection).
 df2 = df_filtered
 list = {'g20','g21','g22','g23','g24','g25','g26','g27','g28'} #making a list with all the columns name use in the graph
 df2= df2[df2[list].notna()] #cleaning na
@@ -277,10 +303,11 @@ s_df2 = pd.DataFrame(dict(
 s_fig_ra_general = px.line_polar(s_df2, r='r', theta='theta', line_close=True, title="Priority groups (Only for Individuals Scope)")
 s_fig_ra_general.update_traces(line_color='#9b59b6', line_width=1)
 s_fig_ra_general.update_traces(fill='toself')
-
+s_fig_ra_general.add_annotation(x=1, y=0,
+            text='Out of '+ sz +' Partners reporting information about the Priority Groups pledged to make more resilient',showarrow=False,
+            yshift=-60)
 st.write(s_fig_ra_general)
-
-
+st.markdown("""---""")
 #__________________________________________________________________________________________________________________________________________________________________
 # SCATTER PLOT INLAND. RURAL - All Engagement Scope
 #__________________________________________________________________________________________________________________________________________________________________
@@ -325,7 +352,7 @@ plt.ylim([0, 100])    #more ideas: https://matplotlib.org/stable/gallery/pie_and
 
 col1, col2, col3 = st.columns((0.4,2.2,0.4))
 col2.pyplot(fig)
-
+st.markdown("""---""")
 #__________________________________________________________________________________________________________________________________________________________________
 # Companies type
 #__________________________________________________________________________________________________________________________________________________________________
@@ -348,7 +375,7 @@ ax.xaxis.set_major_formatter(mtick.PercentFormatter())
 ax.set(ylabel=None)
 plt.title('Types of companies as R2R Partners Members', fontsize=13, loc='left')
 st.pyplot(fig)
-
+st.markdown("""---""")
 
 #__________________________________________________________________________________________________________________________________________________________________
 # Natural Systems
@@ -370,3 +397,4 @@ ax.xaxis.set_major_formatter(mtick.PercentFormatter())
 ax.set(ylabel=None)
 plt.title('Types of Natural Systems hoped to have an impact', fontsize=13, loc='left')
 st.pyplot(fig)
+st.markdown("""---""")
