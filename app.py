@@ -4,6 +4,8 @@ import numpy as np
 import plotly.express as px
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
+import seaborn as sns
+import matplotlib.ticker as ticker
 
 
 #__________________________________________________________________________________________________________________________________________________________________
@@ -67,6 +69,7 @@ df_pdg["g25"] = df_pdg["g25"].replace(replacement_mapping_dict) #Indigenous or t
 df_pdg["g26"] = df_pdg["g26"].replace(replacement_mapping_dict) #Racial, ethnic and/or religious minorities ind
 df_pdg["g27"] = df_pdg["g27"].replace(replacement_mapping_dict) #Refugees ind
 df_pdg["g28"] = df_pdg["g28"].replace(replacement_mapping_dict) #Low income communities ind
+
 ##change format
 df_pdg["g20"] = pd.to_numeric(df_pdg["g20"]) #Women and girls ind
 df_pdg["g21"] = pd.to_numeric(df_pdg["g21"]) #LGBTQIA+ ind
@@ -89,13 +92,17 @@ df_pdg["g1680"] = pd.to_numeric(df_pdg["g1680"])
 df_pdg["g2093"] = pd.to_numeric(df_pdg["g2093"])
 df_pdg["g2094"] = pd.to_numeric(df_pdg["g2094"])
 ##Creating list of series needed to treat multiquestionsº.
-hazard_list_ind = df_pdg.iloc[:, 32:50].columns.values.tolist() #Individual Engagement
-hazard_list_comp = df_pdg.iloc[:, 460:478].columns.values.tolist() #Companies engagement
-hazard_list_countries = df_pdg.iloc[:, 867:885].columns.values.tolist() #Countries
-hazard_list_region = df_pdg.iloc[:, 1274:1292].columns.values.tolist() #Regions
-hazard_list_cities = df_pdg.iloc[:, 1681:1699].columns.values.tolist() #Cities
-hazard_list_nat_sys  = df_pdg.iloc[:, 2095:2113].columns.values.tolist() #Natural Systems
-hazards_options = ['Heat stress - lives & livelihoods combined','Heat stress - livelihoods (work)','Heat stress - lives','Extreme heat','Extreme cold','Snow and ice','Drought (agriculture focus)','Drought (other sectors)','Water stress (urban focus)','Water stress (rural focus)','Fire weather (risk of wildfires)','Urban flooding','Riverine flooding','Coastal flooding','Other coastal events','Oceanic events','Hurricanes/cyclones','Extreme wind']
+hazard_list_ind         = df_pdg.iloc[:, 32:50].apply(lambda x: x.str.strip()).columns.values.tolist() #Individual Engagement
+hazard_list_comp        = df_pdg.iloc[:, 460:478].apply(lambda x: x.str.strip()).columns.values.tolist() #Companies engagement
+hazard_list_countries   = df_pdg.iloc[:, 867:885].apply(lambda x: x.str.strip()).columns.values.tolist() #Countries
+hazard_list_region      = df_pdg.iloc[:, 1274:1292].apply(lambda x: x.str.strip()).columns.values.tolist() #Regions
+hazard_list_cities      = df_pdg.iloc[:, 1681:1699].apply(lambda x: x.str.strip()).columns.values.tolist() #Cities
+hazard_list_nat_sys     = df_pdg.iloc[:, 2095:2113].apply(lambda x: x.str.strip()).columns.values.tolist() #Natural Systems
+hazards_options         = ['Heat stress - lives & livelihoods combined','Heat stress - livelihoods (work)','Heat stress - lives','Extreme heat','Extreme cold','Snow and ice','Drought (agriculture focus)','Drought (other sectors)','Water stress (urban focus)','Water stress (rural focus)','Fire weather (risk of wildfires)','Urban flooding','Riverine flooding','Coastal flooding','Other coastal events','Oceanic events','Hurricanes/cyclones','Extreme wind']
+companies_type_list     = df_pdg.iloc[:, 436:457].apply(lambda x: x.str.strip()).columns.values.tolist()
+nat_syst_type_list      = df_pdg.iloc[:, 2079:2089].apply(lambda x: x.str.strip()).columns.values.tolist()
+
+
 #All Hazards Treatment
 df_pdg[hazard_list_ind] = df_pdg[hazard_list_ind].where(df_pdg['g32'] != 'All Hazard', hazards_options)  #Recode "All Hazard" = Apply to all Hazard"
 df_pdg[hazard_list_comp] = df_pdg[hazard_list_comp].where(df_pdg['g460'] != 'All Hazard', hazards_options)
@@ -103,15 +110,6 @@ df_pdg[hazard_list_countries] = df_pdg[hazard_list_countries].where(df_pdg['g867
 df_pdg[hazard_list_region] = df_pdg[hazard_list_region].where(df_pdg['g1274'] != 'All Hazard', hazards_options)
 df_pdg[hazard_list_cities] = df_pdg[hazard_list_cities].where(df_pdg['g1681'] != 'All Hazard', hazards_options)
 df_pdg[hazard_list_nat_sys] = df_pdg[hazard_list_nat_sys].where(df_pdg['g2095'] != 'All Hazard', hazards_options)
-
-#replacement_mapping_dict = {"Heat stress - lives & livelihoods combined": "Heat stress - lives & livelihoods combined"," Heat stress - lives": "Heat stress - lives",}
-#df_pdg[hazard_list_ind] = df_pdg[hazard_list_ind].replace(replacement_mapping_dict)
-#df_pdg[hazard_list_comp] = df_pdg[hazard_list_comp].replace(replacement_mapping_dict)
-#df_pdg[hazard_list_countries] = df_pdg[hazard_list_countries].replace(replacement_mapping_dict)
-#df_pdg[hazard_list_region] = df_pdg[hazard_list_region].replace(replacement_mapping_dict)
-#df_pdg[hazard_list_cities] = df_pdg[hazard_list_cities].replace(replacement_mapping_dict)
-#df_pdg[hazard_list_nat_sys] = df_pdg[hazard_list_nat_sys].replace(replacement_mapping_dict)
-
 #Concatenating columns
 df_pdg['Engagement scope'] = df_pdg[['g13','g14','g15','g16','g17','g18']].apply(lambda x:'; '.join(x.dropna().astype(str)),axis=1)
 df_pdg['Hazards_ind'] = df_pdg[hazard_list_ind].apply(lambda x:'; '.join(x.dropna().astype(str)),axis=1) #Concatenate
@@ -121,9 +119,11 @@ df_pdg['Hazards_region'] = df_pdg[hazard_list_region].apply(lambda x:'; '.join(x
 df_pdg['Hazards_cities'] = df_pdg[hazard_list_cities].apply(lambda x:'; '.join(x.dropna().astype(str)),axis=1)
 df_pdg['Hazards_nat_sys'] = df_pdg[hazard_list_nat_sys].apply(lambda x:'; '.join(x.dropna().astype(str)),axis=1)
 df_pdg['All_Hazards'] = df_pdg[['Hazards_ind','Hazards_comp','Hazards_countries','Hazards_region','Hazards_cities','Hazards_nat_sys']].apply(lambda x:'; '.join(x.dropna().astype(str)),axis=1)
+df_pdg['Companies Types'] = df_pdg[companies_type_list].apply(lambda x:'; '.join(x.dropna().astype(str)),axis=1)
+df_pdg['Natural Systems Types'] = df_pdg[nat_syst_type_list].apply(lambda x:'; '.join(x.dropna().astype(str)),axis=1)
 #Confirmation that works!
-#st.write(hazard_list_ind,hazard_list_comp, hazard_list_countries,hazard_list_region,hazard_list_cities,hazard_list_nat_sys)
-#st.table(df_pdg[['g32','Hazards_ind','g460','Hazards_comp','g867','Hazards_countries','g1274','Hazards_region','g1681','Hazards_cities','g2095','Hazards_nat_sys','All_Hazards']])
+    #st.write(hazard_list_ind,hazard_list_comp, hazard_list_countries,hazard_list_region,hazard_list_cities,hazard_list_nat_sys)
+    #st.table(df_pdg[['g32','Hazards_ind','g460','Hazards_comp','g867','Hazards_countries','g1274','Hazards_region','g1681','Hazards_cities','g2095','Hazards_nat_sys','All_Hazards']])
 
 #continents for indivdual engagement
 #table_continents_ind = df_pdg.iloc[:, 52:57] #selecting all columns and making a new dataframe
@@ -221,7 +221,6 @@ df_filtered.set_index("Master ID", inplace = True)
 # MAIN RESULTS
 #__________________________________________________________________________________________________________________________________________________________________
 #
-
 st.markdown('Resultados')
 col1,col2,col3,col4 = st.columns((1,1,1,3))
 col1.caption('Original dataframe shape')
@@ -230,30 +229,38 @@ col2.caption('Filtered dataframe shape')
 col2.write(df_filtered.shape)
 st.write(df_filtered[['Initiative_name','Short name','Priority group','Impact System','Engagement scope','Region','All_Hazards']])
 
-
 #__________________________________________________________________________________________________________________________________________________________________
 # HAZARDS  PLEDGE
 #__________________________________________________________________________________________________________________________________________________________________
 df2 = df_filtered['All_Hazards'].str.split(";", expand=True).apply(lambda x: x.str.strip())
-df2 = df2.stack().value_counts()#(normalize=True)
+df2 = df2.stack().value_counts()
 df2 = df2.iloc[1:].sort_index().reset_index(name='Frecuency')  #Check what happend whit blank information.
-fig = px.treemap(df2, path=[px.Constant("Hazards distribution"),'index'], values = 'Frecuency')
+#creating new columms based in a dictionary
+heat_list     = {'Heat stress - lives & livelihoods combined':'Heat','Heat stress - livelihoods (work)':'Heat','Heat stress - lives':'Heat','Extreme heat':'Heat'}
+cold_list     = {'Extreme cold':'Cold','Snow and ice':'Cold'}
+drought_list  = {'Drought (agriculture focus)':'Drought','Drought (other sectors)':'Drought'}
+water_list    = {'Water stress (urban focus)':'Water','Water stress (rural focus)':'Water'}
+fire_list     = {'Fire weather (risk of wildfires)':'Fire'}
+flooding_list = {'Urban flooding':'Flooding','Riverine flooding':'Flooding','Coastal flooding':'Flooding'}
+coastal_list  = {'Other coastal events':'Coastal / Ocean','Oceanic events':'Coastal / Ocean'}
+wind_list     = {'Hurricanes/cyclones':'Wind','Extreme wind':'Wind'}
+hazard_dictionary = {**heat_list,**cold_list,**drought_list,**water_list,**fire_list,**flooding_list,**coastal_list,**wind_list}
+df2['group'] = df2['index'].map(hazard_dictionary)
+df2['Percentaje'] = ((df2['Frecuency']/df2['Frecuency'].sum())*100).round(2)
+
+#treemap
+fig = px.treemap(df2, path=[px.Constant("R2R Pledges to Hazards"),'group','index'], values = 'Percentaje')
 fig.update_traces(root_color="lightgray")
 fig.update_layout(margin = dict(t=50, l=25, r=25, b=25))
 st.plotly_chart(fig)
-
 
 #__________________________________________________________________________________________________________________________________________________________________
 # PRIORITY GROUPS PLEDGE
 #__________________________________________________________________________________________________________________________________________________________________
 #
-
 df2 = df_filtered
-
 list = {'g20','g21','g22','g23','g24','g25','g26','g27','g28'} #making a list with all the columns name use in the graph
-
 df2= df2[df2[list].notna()] #cleaning na
-
 pg0 = df2["g20"].mean() #Women and girls
 pg1 = df2["g21"].mean() #LGBTQIA+
 pg2 = df2["g22"].mean() #Elderly
@@ -267,7 +274,8 @@ pg8 = df2["g28"].mean() #Low income communities
 s_df2 = pd.DataFrame(dict(
     r=[pg0, pg1, pg2, pg3, pg4, pg5, pg6, pg7, pg8],
     theta=['Women and girls','LGBTQIA+','Elderly','Children and Youth','Disabled','Indigenous or traditional communities','Racial, ethnic and/or religious minorities','Refugees','Low income communities']))
-s_fig_ra_general = px.line_polar(s_df2, r='r', theta='theta', line_close=True, title="Vulnerable groups (Only for Individuals Scope)")
+s_fig_ra_general = px.line_polar(s_df2, r='r', theta='theta', line_close=True, title="Priority groups (Only for Individuals Scope)")
+s_fig_ra_general.update_traces(line_color='#9b59b6', line_width=1)
 s_fig_ra_general.update_traces(fill='toself')
 
 st.write(s_fig_ra_general)
@@ -282,16 +290,12 @@ df2 = df_filtered
 
 costal_list = {'g30','g458','g865','g1272','g1679','g2093'}
 rural_list  = {'g31','g459','g866','g1273','g1680','g2094'}
-
 df2_costal  = df2[costal_list]
 df2_rural   = df2[rural_list ]
-
 df2['costal_average'] = df2_costal.mean(axis=1,numeric_only=True,skipna=True)
 df2['rural_average'] = df2_rural.mean(axis=1,numeric_only=True,skipna=True)
-
 df2 = df2[df2['costal_average'].notna()]
 df2 = df2[df2['rural_average'].notna()]
-
 df2.rename(columns = {'costal_average':'C', 'rural_average':'R', 'Short name':'Name'}, inplace = True)
 
 #Scatterplot for coastal/rural in individual scope
@@ -302,10 +306,9 @@ y = df2['R']
 z = df2['Name']
 
 fig = plt.figure(figsize=(10, 10))
-#placeholder = st.empty()
 
 for i in range(len(df2)):
-    plt.scatter(x,y,c='blue', marker='o')
+    plt.scatter(x,y,c='#9b59b6', marker='o')
 
 #plt.title("Individuals' environment ""[%]""",fontsize=14)
 plt.xlabel('Inland'+' '*74+'Coastal',fontsize=13)
@@ -323,45 +326,47 @@ plt.ylim([0, 100])    #more ideas: https://matplotlib.org/stable/gallery/pie_and
 col1, col2, col3 = st.columns((0.4,2.2,0.4))
 col2.pyplot(fig)
 
-
 #__________________________________________________________________________________________________________________________________________________________________
-# SCATTER PLOT INLAND. RURAL
+# Companies type
 #__________________________________________________________________________________________________________________________________________________________________
 #
-#Data preparation
-#df2 = df_filtered
+df2 = df_filtered['Companies Types'].str.split(";", expand=True).apply(lambda x: x.str.strip())
+df2 = df2.stack().value_counts()
+df2 = df2.iloc[1:].sort_index().reset_index(name='Frecuency')
+df2['Percentaje'] = ((df2['Frecuency']/df2['Frecuency'].sum())*100).round(2)
 
-#df2= df2[df2['g30'].notna()] #Individual coastal
-#df2= df2[df2['g31' ].notna()] #Individual rural
+companies_type_rename_list = {'A. Agriculture, forestry and fishing':'Agriculture, forestry and fishing','B. Mining and quarrying':'Mining and quarrying','C. Manufacturing':'Manufacturing','D. Electricity, gas, steam and air conditioning supply':'Electricity, gas, steam and air conditioning supply','E. Water supply; sewerage, waste management and remediation activities':'Water supply; sewerage, waste management and remediation activities','F. Construction':'Construction','G. Wholesale and retail trade; repair of motor vehicles and motorcycles':'Wholesale and retail trade; repair of motor vehicles and motorcycles','H. Transportation and storage':'Transportation and storage','I. Accommodation and food service activities':'Accommodation and food service activities','J. Information and communication':'Information and communication','K. Financial and insurance activities':'Financial and insurance activities','L. Real estate activities':'Real estate activities','M. Professional, scientific and technical activities':'Professional, scientific and technical activities','N. Administrative and support service activities':'Administrative and support service activities','O. Public administration and defence; compulsory social security':'Public administration and defence; compulsory social security','P. Education':'Education','Q. Human health and social work activities':'Human health and social work activities','R. Arts, entertainment and recreation':'Arts, entertainment and recreation','S. Other service activities':'Other service activities','T. Activities of households as employers; undifferentiated goods- and services-producing activities of households for own use':'Activities of households as employers; undifferentiated goods- and services-producing activities of households for own use','U. Activities of extraterritorial organizations and bodies':'Activities of extraterritorial organizations and bodies'}
+df2['index'] = df2['index'].replace(companies_type_rename_list)
 
-#df2['g30'] = df2['g30'].astype(int) #Individual coastal
-#df2['g31']   = df2['g31'  ].astype(int) #Individual rural
+fig, ax = plt.subplots() #solved by add this line
+ax  = sns.barplot(x="Percentaje", y="index", data=df2,label="Types of Companies", color="#9b59b6")
+ax.bar_label(ax.containers[0],padding=3)
 
-#df2.rename(columns = {'g30':'C', 'g31':'R', 'Short name':"Name"}, inplace = True)
+ax.set_xlim(right=15)
+ax.xaxis.set_major_formatter(mtick.PercentFormatter())
 
-#Scatterplot for coastal/rural in individual scope
-#st.markdown("Scatterplot for coastal/rural in individual scope (Only for Individuals Scope)")
+ax.set(ylabel=None)
+plt.title('Types of companies as R2R Partners Members', fontsize=13, loc='left')
+st.pyplot(fig)
 
-#x = df2['C']
-#y = df2['R']
-#z = df2['Name']
 
-#fig = plt.figure(figsize=(10, 10))
-#placeholder = st.empty()
-#for i in range(len(df2)):
-#    plt.scatter(x,y,c='red', marker='o')
+#__________________________________________________________________________________________________________________________________________________________________
+# Natural Systems
+#__________________________________________________________________________________________________________________________________________________________________
 
-#plt.title("Individuals' environment ""[%]""",fontsize=13)
-#plt.xlabel('inland'+' '*74+'coastal',fontsize=11)
-#plt.ylabel('urban'+' '*49+'rural',fontsize=11)
+df2 = df_filtered['Natural Systems Types'].str.split(";", expand=True).apply(lambda x: x.str.strip())
+df2 = df2.stack().value_counts()
+df2 = df2.iloc[1:].sort_index().reset_index(name='Frecuency')
+df2['Percentaje'] = ((df2['Frecuency']/df2['Frecuency'].sum())*100).round(2)
 
-#plt.gca().spines['top']  .set_visible(False)
-#plt.gca().spines['right'].set_visible(False)
+nat_sys_dict ={'T Terrestrial':'Terrestrial','S Subterranean':'Subterranean','SF Subterranean-Freshwater':'Subterranean-Freshwater','SM Subterranean-Marine':'Subterranean-Marine','FT Freshwater-Terrestrial':'Freshwater-Terrestrial','F Freshwater':'Freshwater','FM Freshwater-Marine':'Freshwater-Marine','M Marine':'Marine','MT Marine-Terrestrial':'Marine-Terrestrial','MFT Marine-Freshwater-Terrestrial':'Marine-Freshwater-Terrestrial'}
+df2['index'] = df2['index'].replace(nat_sys_dict)
 
-#for i in range(len(df2)):
-#     plt.text(df2.C[df2.Name ==z[i]],df2.R[df2.Name==z[i]],z[i], fontdict=dict(color='black', alpha=0.5, size=12))
-
-#plt.xlim([0, 100])
-#plt.ylim([0, 100])    #more ideas: https://matplotlib.org/stable/gallery/pie_and_polar_charts/polar_scatter.html
-
-#placeholder.pyplot(fig)
+fig, ax = plt.subplots()
+ax  = sns.barplot(x="Percentaje", y="index", data=df2,label="Types of Natural Systems", color="#9b59b6")
+ax.bar_label(ax.containers[0],padding=3)
+ax.set_xlim(right=35)
+ax.xaxis.set_major_formatter(mtick.PercentFormatter())
+ax.set(ylabel=None)
+plt.title('Types of Natural Systems hoped to have an impact', fontsize=13, loc='left')
+st.pyplot(fig)
