@@ -7,11 +7,13 @@ import matplotlib.ticker as mtick
 import seaborn as sns
 
 
-
 #__________________________________________________________________________________________________________________________________________________________________
 # Dashboard structure
 #__________________________________________________________________________________________________________________________________________________________________
 st.set_page_config(page_title="Explorer", page_icon="🌱", layout="wide", initial_sidebar_state="expanded")
+
+with open( "style.css" ) as css:
+    st.markdown( f'<style>{css.read()}</style>' , unsafe_allow_html= True)
 
 # Hide index when showing a table. CSS to inject contained in a string
 hide_table_row_index = """
@@ -172,7 +174,8 @@ areas_options = ['Cross-cutting enablers: Planning and Finance','Food and Agricu
 engagement_options = ['Individuals','Companies','Countries','Regions','Cities','Natural Systems']
 hazards_options = ['Heat stress - lives & livelihoods combined','Heat stress - livelihoods (work)','Heat stress - lives','Extreme heat','Extreme cold','Snow and ice','Drought (agriculture focus)','Drought (other sectors)','Water stress (urban focus)','Water stress (rural focus)','Fire weather (risk of wildfires)','Urban flooding','Riverine flooding','Coastal flooding','Other coastal events','Oceanic events','Hurricanes/cyclones','Extreme wind']
 
-st.sidebar.subheader("Select R2R Partner Information")
+st.sidebar.image("R2R_RGB_PINK.png")
+st.sidebar.markdown("SELECT R2R PARTNER INFORMATION")
 st.sidebar.caption("If no specific filter is selected, all available information regarding R2R partners will be displayed. Please select filters for a more targeted display.")
 #st.sidebar.markdown('**Resiliencia**')
 areas_selection = st.sidebar.multiselect("Partner's Impact Systems",      areas_options)
@@ -226,10 +229,11 @@ selection_all = [["Oceania & Pacific","East Asia","South Asia","East Europe & Ce
   ["Individuals","Companies","Countries","Regions","Cities","Natural Systems",""],
   ["Heat stress - lives & livelihoods combined","Heat stress - livelihoods (work)","Heat stress - lives","Extreme heat","Extreme cold","Snow and ice","Drought (agriculture focus)","Drought (other sectors)","Water stress (urban focus)","Water stress (rural focus)","Fire weather (risk of wildfires)","Urban flooding","Riverine flooding","Coastal flooding","Other coastal events","Oceanic events","Hurricanes/cyclones","Extreme wind",""]]
 
+st.header('R2R DATA EXPLORER V2.0 Trial Fase')
 if selection == selection_all:
-    st.subheader('Complete R2R Partners Information on display')
+    st.subheader('**COMPLETE R2R PARTNERS INFORMATION ON DISPLAY**')
 else:
-    st.subheader('Displayed results show R2R Partners Information meeting all selected criteria.')
+    st.subheader('DISPLAYED RESULTS SHOW R2R PARTNERS INFORMATION MEETING ALL SELECTED CRITERIA')
 
 col1,col2,col3,col4 = st.columns((1,1,1,3))
 col1.caption('Original dataframe shape')
@@ -301,7 +305,7 @@ s_df2 = pd.DataFrame(dict(
     r=[pg0, pg1, pg2, pg3, pg4, pg5, pg6, pg7, pg8],
     theta=['Women and girls','LGBTQIA+','Elderly','Children and Youth','Disabled','Indigenous or traditional communities','Racial, ethnic and/or religious minorities','Refugees','Low income communities']))
 s_fig_ra_general = px.line_polar(s_df2, r='r', theta='theta', line_close=True, title="Priority groups (Only for Individuals Scope)")
-s_fig_ra_general.update_traces(line_color='#9b59b6', line_width=1)
+s_fig_ra_general.update_traces(line_color='#FF37D5', line_width=1)
 s_fig_ra_general.update_traces(fill='toself')
 s_fig_ra_general.add_annotation(x=1, y=0,
             text='Out of '+ sz +' Partners reporting information about the Priority Groups pledged to make more resilient',showarrow=False,
@@ -314,7 +318,6 @@ st.markdown("""---""")
 #
 #Data preparation
 df2 = df_filtered
-
 costal_list = {'g30','g458','g865','g1272','g1679','g2093'}
 rural_list  = {'g31','g459','g866','g1273','g1680','g2094'}
 df2_costal  = df2[costal_list]
@@ -335,12 +338,11 @@ z = df2['Name']
 fig = plt.figure(figsize=(10, 10))
 
 for i in range(len(df2)):
-    plt.scatter(x,y,c='#9b59b6', marker='o')
+    plt.scatter(x,y,c='#FF37D5', marker='o')
 
 #plt.title("Individuals' environment ""[%]""",fontsize=14)
 plt.xlabel('Inland'+' '*74+'Coastal',fontsize=13)
 plt.ylabel('Urban'+' '*49+'Rural',fontsize=13)
-
 plt.gca().spines['top']  .set_visible(False)
 plt.gca().spines['right'].set_visible(False)
 
@@ -365,13 +367,11 @@ df2['Percentaje'] = ((df2['Frecuency']/df2['Frecuency'].sum())*100).round(2)
 companies_type_rename_list = {'A. Agriculture, forestry and fishing':'Agriculture, forestry and fishing','B. Mining and quarrying':'Mining and quarrying','C. Manufacturing':'Manufacturing','D. Electricity, gas, steam and air conditioning supply':'Electricity, gas, steam and air conditioning supply','E. Water supply; sewerage, waste management and remediation activities':'Water supply; sewerage, waste management and remediation activities','F. Construction':'Construction','G. Wholesale and retail trade; repair of motor vehicles and motorcycles':'Wholesale and retail trade; repair of motor vehicles and motorcycles','H. Transportation and storage':'Transportation and storage','I. Accommodation and food service activities':'Accommodation and food service activities','J. Information and communication':'Information and communication','K. Financial and insurance activities':'Financial and insurance activities','L. Real estate activities':'Real estate activities','M. Professional, scientific and technical activities':'Professional, scientific and technical activities','N. Administrative and support service activities':'Administrative and support service activities','O. Public administration and defence; compulsory social security':'Public administration and defence; compulsory social security','P. Education':'Education','Q. Human health and social work activities':'Human health and social work activities','R. Arts, entertainment and recreation':'Arts, entertainment and recreation','S. Other service activities':'Other service activities','T. Activities of households as employers; undifferentiated goods- and services-producing activities of households for own use':'Activities of households as employers; undifferentiated goods- and services-producing activities of households for own use','U. Activities of extraterritorial organizations and bodies':'Activities of extraterritorial organizations and bodies'}
 df2['index'] = df2['index'].replace(companies_type_rename_list)
 
-fig, ax = plt.subplots() #solved by add this line
-ax  = sns.barplot(x="Percentaje", y="index", data=df2,label="Types of Companies", color="#9b59b6")
+fig, ax = plt.subplots()
+ax  = sns.barplot(x="Percentaje", y="index", data=df2,label="Types of Companies", color="#FF37D5")
 ax.bar_label(ax.containers[0],padding=3)
-
-ax.set_xlim(right=15)
+#ax.set_xlim(right=15)
 ax.xaxis.set_major_formatter(mtick.PercentFormatter())
-
 ax.set(ylabel=None)
 plt.title('Types of companies as R2R Partners Members', fontsize=13, loc='left')
 st.pyplot(fig)
@@ -384,17 +384,17 @@ st.markdown("""---""")
 df2 = df_filtered['Natural Systems Types'].str.split(";", expand=True).apply(lambda x: x.str.strip())
 df2 = df2.stack().value_counts()
 df2 = df2.iloc[1:].sort_index().reset_index(name='Frecuency')
-df2['Percentaje'] = ((df2['Frecuency']/df2['Frecuency'].sum())*100).round(2)
+df2['Percentaje'] = ((df2['Frecuency']/df2['Frecuency'].sum())*100).round(1)
 
 nat_sys_dict ={'T Terrestrial':'Terrestrial','S Subterranean':'Subterranean','SF Subterranean-Freshwater':'Subterranean-Freshwater','SM Subterranean-Marine':'Subterranean-Marine','FT Freshwater-Terrestrial':'Freshwater-Terrestrial','F Freshwater':'Freshwater','FM Freshwater-Marine':'Freshwater-Marine','M Marine':'Marine','MT Marine-Terrestrial':'Marine-Terrestrial','MFT Marine-Freshwater-Terrestrial':'Marine-Freshwater-Terrestrial'}
 df2['index'] = df2['index'].replace(nat_sys_dict)
 
 fig, ax = plt.subplots()
-ax  = sns.barplot(x="Percentaje", y="index", data=df2,label="Types of Natural Systems", color="#9b59b6")
+ax  = sns.barplot(x="Percentaje", y="index", data=df2,label="Types of Natural Systems", color="#FF37D5")
 ax.bar_label(ax.containers[0],padding=3)
-ax.set_xlim(right=35)
+#ax.set_xlim(right=70)
 ax.xaxis.set_major_formatter(mtick.PercentFormatter())
 ax.set(ylabel=None)
-plt.title('Types of Natural Systems hoped to have an impact', fontsize=13, loc='left')
+plt.title('Types of Natural Systems pledged to have an impact', fontsize=13, loc='left')
 st.pyplot(fig)
 st.markdown("""---""")
