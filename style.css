@@ -5,28 +5,12 @@ html, body, [class*="css"] {
   }
 
 html, body, [class*="css-hxt7ib e1fqkh3o4"] {
-      font-family: 'Montserrat', 'Helvetica', 'Arial', 'sans-serif';
-      #font-size: px;
-      #font-weight: 500;
-      background-color: #112E4D;
-      color: #DCE3E5;
-      line-height: 1.2rem;
-    }
+        color: #DCE3E5;
+        #line-height: 1.2rem;
+      }
 
-html, body, [class*="block-container css-18e3th9 egzxvld2"] {
-      font-family: 'Montserrat', 'Helvetica', 'Arial', 'sans-serif';
-      #font-size: px;
-      #font-weight: 500;
-      background-color: #DCE3E5;
-      color: #112E4D;
-      #line-height: 1.2rem;
-        }
-
-html, body, [class*="css-18ni7ap e8zbici2"] {
-              font-family: 'Montserrat', 'Helvetica', 'Arial', 'sans-serif';
-              #font-size: px;
-              #font-weight: 500;
-              background-color: #DCE3E5;
-              color: #112E4D;
-              #line-height: 1.2rem;
-                }
+html, body, [class*="css-81oif8"] {
+        color: #DCE3E5;
+        font-size: 12px;
+        #line-height: 0.5rem;
+            }
