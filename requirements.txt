@@ -5,6 +5,3 @@ plotly==5.11.0
 matplotlib==3.5.1
 mplcursors==0.5.2
 seaborn==0.12.2
-
-
-
