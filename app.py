@@ -12,6 +12,9 @@ import seaborn as sns
 #__________________________________________________________________________________________________________________________________________________________________
 st.set_page_config(page_title="Explorer", page_icon="🌱", layout="wide", initial_sidebar_state="expanded")
 
+CURRENT_THEME = "light"
+IS_DARK_THEME = False
+
 with open( "style.css" ) as css:
     st.markdown( f'<style>{css.read()}</style>' , unsafe_allow_html= True)
 
@@ -24,6 +27,7 @@ hide_table_row_index = """
             """
 # Inject CSS with Markdown
 st.markdown(hide_table_row_index, unsafe_allow_html=True)
+
 #__________________________________________________________________________________________________________________________________________________________________
 # Export data
 #__________________________________________________________________________________________________________________________________________________________________
@@ -141,6 +145,9 @@ df_plan = pd.read_csv('Plan_27012013.csv',sep=';', header=None, prefix="p").iloc
 df_plan.set_index("p0", inplace = True)
 df_plan.index.names = ['Master ID']
 df_plan = df_plan.dropna(how = 'all')
+
+#confirmar uso de dummy item para vincular encuesta plan. Ver video aquí: https://www.youtube.com/watch?v=iZUH1qlgnys&list=PLtqF5YXg7GLmCvTswG32NqQypOuYkPRUE&index=7
+
 
 #Resilience Attributes Survey
 df_ra = pd.read_csv('RA_27012013.csv',sep=';', header=None, prefix="r").iloc[2:]
@@ -264,9 +271,13 @@ coastal_list  = {'Other coastal events':'Coastal / Ocean','Oceanic events':'Coas
 wind_list     = {'Hurricanes/cyclones':'Wind','Extreme wind':'Wind'}
 hazard_dictionary = {**heat_list,**cold_list,**drought_list,**water_list,**fire_list,**flooding_list,**coastal_list,**wind_list}
 df2['group'] = df2['index'].map(hazard_dictionary)
-df2['Percentaje'] = ((df2['Frecuency']/df2['Frecuency'].sum())*100).round(1)
+df2['% hazard'] = ((df2['Frecuency']/df2['Frecuency'].sum())*100).round(1)
+#df2 = df2.groupby(['group']).value_counts(normalize=True).sort_index().reset_index(name='%group')
+#df2['%group'] = df2['%index']*100
+
 #treemap
-fig = px.treemap(df2, path=[px.Constant("Hazards"),'group','index'], values = 'Percentaje')
+st.write(df2)
+fig = px.treemap(df2, path=[px.Constant("Hazards"),'group','index'], values = '% hazard')
 fig.update_traces(root_color="lightgray")
 fig.update_layout(title_text='Hazards aimed to provide resilience by R2R Partners')
 fig.update_layout(margin = dict(t=50, l=25, r=25, b=25))
